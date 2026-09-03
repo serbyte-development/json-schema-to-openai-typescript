@@ -1,0 +1,66 @@
+{
+  "name": "json-schema-to-openai-typescript",
+  "version": "0.1.0",
+  "description": "Convert JSON Schema into OpenAI TypeScript for tool schemas, MCP, and standalone structured schemas.",
+  "license": "MIT",
+  "author": "Serbyte Development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Serbyte-Development/json-schema-to-openai-typescript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Serbyte-Development/json-schema-to-openai-typescript/issues"
+  },
+  "homepage": "https://github.com/Serbyte-Development/json-schema-to-openai-typescript#readme",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "json-schema-to-openai-typescript": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "LICENSES",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "render": "npm run build --silent && node dist/cli.js",
+    "test": "rm -rf .test-dist && tsc -p tsconfig.test.json && node --test .test-dist/test/*.test.js",
+    "typecheck": "tsc --noEmit",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "check": "npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "json-schema-to-typescript",
+    "openai-typescript",
+    "json-schema",
+    "typescript",
+    "openai",
+    "chatgpt",
+    "mcp",
+    "model-context-protocol",
+    "mcp-tools",
+    "tool-calling",
+    "function-calling",
+    "structured-output",
+    "tool-schema",
+    "schema-renderer"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.17",
+    "typescript": "^6.0.3"
+  }
+}
