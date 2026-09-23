@@ -1,6 +1,6 @@
 # JSON Schema to OpenAI TypeScript
 
-[![CI](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml)
+[![CI](https://github.com/serbyte-development/json-schema-to-openai-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/serbyte-development/json-schema-to-openai-typescript/actions/workflows/ci.yml)
 [![Node.js 22+](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
 ## The problem
@@ -228,4 +228,4 @@ npm run convert -- fixtures/conversion/mcp-tools.json --prefix mcp__test_openai_
 
 For a fresh ChatGPT Code Mode capture session, use [`verify-openai/capture/code-mode-prompt.md`](./verify-openai/capture/code-mode-prompt.md) rather than manually copying connector signatures.
 
-Developed & maintained by [Serbyte Development](https://www.serbyte.net/) · [GitHub](https://github.com/Serbyte-Development)
+Developed & maintained by [Serbyte Development](https://www.serbyte.net/) · [GitHub](https://github.com/serbyte-development)

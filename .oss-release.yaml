@@ -1,5 +1,5 @@
 version: 1
-repository: Serbyte-Development/json-schema-to-openai-typescript
+repository: serbyte-development/json-schema-to-openai-typescript
 branch: main
 targets:
   - github

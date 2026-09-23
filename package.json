@@ -6,12 +6,12 @@
   "author": "Serbyte Development",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Serbyte-Development/json-schema-to-openai-typescript.git"
+    "url": "git+https://github.com/serbyte-development/json-schema-to-openai-typescript.git"
   },
   "bugs": {
-    "url": "https://github.com/Serbyte-Development/json-schema-to-openai-typescript/issues"
+    "url": "https://github.com/serbyte-development/json-schema-to-openai-typescript/issues"
   },
-  "homepage": "https://github.com/Serbyte-Development/json-schema-to-openai-typescript#readme",
+  "homepage": "https://github.com/serbyte-development/json-schema-to-openai-typescript#readme",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
