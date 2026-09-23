@@ -36,6 +36,27 @@ Shellby's `shell_run` previously used Zod `.meta(...)` to inject a `oneOf` fragm
 
 The causal boundary is not yet known. Current evidence shows that the metadata injection caused the bad projection in this Shellby case. It does not establish that plain JSON Schema `oneOf` alone collapses OpenAI's renderer, nor that all `.meta(...)` usage does.
 
+The comprehensive probe keeps this separate from MCP tool `_meta`. A dedicated `tool_meta_with_output` tool exists to test whether protocol-level `_meta` changes rendering. Do not treat the historical Zod `.meta(...)` result as evidence that MCP `_meta` has the same effect.
+
+The September 2026 connector capture shows that protocol-level MCP tool `_meta` does not collapse an otherwise ordinary output schema: `tool_meta_with_output` is exposed with `Promise<{ value: string }>`.
+
+## Output schemas
+
+Connector discovery provides direct evidence that MCP `outputSchema` affects the exposed return type. For example, an input tool with an object output schema is surfaced with a `Promise<{ ... }>` return type instead of `Promise<unknown>`.
+
+The probe MCP contains a dedicated output-schema matrix covering top-level primitives, unconstrained schemas, unions, enum/const, constraints, arrays and tuples, object maps, composition keywords, refs, recursion, boolean subschemas, OpenAPI nullable behavior, annotations, schema identity, and MCP tool `_meta`.
+
+Observed return-shape behavior in the current capture includes:
+
+- top-level unconstrained output -> `unknown`
+- recursive `$ref` output -> `unknown`
+- several top-level primitive/array/tuple/type-union/not outputs -> `{ [key: string]: any }`
+- top-level `oneOf`/`anyOf`/`allOf` outputs -> `object`
+- ordinary object outputs -> detailed rendered object types
+- unsupported object keywords can survive as `Additional JSON Schema constraints` comments
+
+The outer connector callable wrapper is not itself the JSON-Schema-to-TypeScript compatibility target. The rendered argument schema body matches the captured Shellby `after.ts` body byte-for-byte after removing only the connector namespace and callable wrapper. Return types remain relevant because they carry `outputSchema` rendering.
+
 ## Related OpenAI implementation
 
 OpenAI publicly documents TypeScript-like function definitions in the Harmony response format and publishes the renderer source at `https://github.com/openai/harmony`.

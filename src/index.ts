@@ -10,8 +10,10 @@ export interface McpToolDefinition {
 }
 
 /** Render MCP tool definitions into OpenAI's TypeScript-like tool schema representation. */
-export function renderOpenAITypescript(tools: readonly McpToolDefinition[]): string {
-  return `${tools.map(renderTool).join("\n\n")}\n`
+export function renderOpenAITypescript(
+  tools: readonly McpToolDefinition[],
+): string {
+  return `${tools.map(renderTool).join("\n")}\n`
 }
 
 /** Render one JSON Schema as OpenAI TypeScript. */
@@ -28,17 +30,25 @@ function renderTool(tool: McpToolDefinition): string {
     return lines.join("\n")
   }
 
-  lines.push(`type ${tool.name} = (_: ${renderHarmonyBasedSchema(tool.inputSchema)}) => any;`)
+  lines.push(
+    `type ${tool.name} = (_: ${renderHarmonyBasedSchema(tool.inputSchema)}) => any;`,
+  )
   return lines.join("\n")
 }
 
-function pushDescription(lines: string[], description: string | undefined): void {
+function pushDescription(
+  lines: string[],
+  description: string | undefined,
+): void {
   if (!description) return
   for (const line of description.split("\n")) lines.push(`// ${line}`)
 }
 
 function isEmptyObjectSchema(schema: JsonSchema): boolean {
-  return schema.type === "object" && Object.keys(asRecord(schema.properties)).length === 0
+  return (
+    schema.type === "object" &&
+    Object.keys(asRecord(schema.properties)).length === 0
+  )
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -46,4 +56,3 @@ function asRecord(value: unknown): Record<string, unknown> {
     ? (value as Record<string, unknown>)
     : {}
 }
-

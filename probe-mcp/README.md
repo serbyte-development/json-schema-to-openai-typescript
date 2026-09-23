@@ -1,0 +1,46 @@
+# OpenAI JSON Schema probe MCP
+
+This MCP exposes hand-authored JSON Schema directly through `tools/list`. It avoids Zod or another schema generator so observed changes can be attributed to the MCP client/OpenAI transformation layer.
+
+The tool set covers JSON Schema 2020-12 primitive types, unions, validation constraints, arrays, tuples, objects, composition, references, recursion, unevaluated keywords, metadata, formats, content keywords, boolean schemas, and several common OpenAPI extensions. Riskier constructs are isolated into separate tools.
+
+The output-schema matrix uses separate tools for top-level primitive outputs, unconstrained outputs, type unions, enums, const values, string and numeric constraints, arrays, tuples, object shapes, additional and pattern properties, `oneOf`, `anyOf`, `allOf`, `not`, conditionals, local and recursive refs, boolean subschemas, OpenAPI `nullable`, schema annotations, schema identity keywords, and MCP tool `_meta`.
+
+## Capture notes
+
+- Connector discovery exposes the input schema inside an `args: ...` wrapper. The schema body is the compatibility target; the wrapper is recorded only when it carries extra information.
+- MCP `outputSchema` is observable in connector discovery as the `Promise<...>` return type. Output rendering is therefore part of the compatibility surface.
+- A historical Shellby capture showed a Zod `.meta(...)` injection causing OpenAI's model-facing schema to collapse to a generic/unknown shape. That observation is documented as evidence, not a general rule about all metadata. The probe includes a tool-level MCP `_meta` case so that behavior can be tested independently.
+
+### Current observed output behavior
+
+The current connector capture exposes 76 tools, including 43 output-schema probes.
+
+- Protocol-level MCP tool `_meta` does not collapse an otherwise ordinary output schema in this capture. `tool_meta_with_output` renders as `Promise<{ value: string }>`.
+- A top-level unconstrained output schema renders as `Promise<unknown>`.
+- A recursive output schema using `$ref` renders as `Promise<unknown>` in this capture.
+- Several top-level non-object output schemas, including primitive types, arrays, tuples, type unions, and a top-level `not`, render as `Promise<{ [key: string]: any }>`.
+- Top-level `oneOf`, `anyOf`, and `allOf` output schemas render as `Promise<object>`.
+- Object-shaped output schemas preserve substantial detail, including constraints, nested required/optional properties, `additionalProperties`, local refs, nullable behavior, annotations, and many unsupported keywords as `Additional JSON Schema constraints` comments.
+
+Run locally:
+
+```bash
+npm run probe:mcp
+```
+
+The MCP endpoint is `http://127.0.0.1:3210/mcp` by default. Set `HOST` or `PORT` to override it.
+
+Validate and print the exact `tools/list` payload through the official MCP client:
+
+```bash
+npm run probe:schemas
+```
+
+Expose the running server with ngrok:
+
+```bash
+npm run probe:tunnel
+```
+
+Use the resulting HTTPS URL with `/mcp` as the connector URL.
