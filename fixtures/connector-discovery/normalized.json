@@ -1,0 +1,382 @@
+[
+  {
+    "name": "empty_object",
+    "input": "object",
+    "output": "unknown"
+  },
+  {
+    "name": "primitive_types",
+    "input": "{ string_value: string, number_value: number, integer_value: integer, boolean_value: boolean, null_value: null, object_value?: { nested: string }, array_value?: string[], unconstrained_value?: any }",
+    "output": "unknown"
+  },
+  {
+    "name": "type_unions",
+    "input": "{ nullable_string: string | null, string_or_number: string | number, scalar_union?: string | number | integer | boolean | null, nullable_object?: object | null, nullable_array?: any[] | null }",
+    "output": "unknown"
+  },
+  {
+    "name": "string_constraints",
+    "input": "{\nbounded?: string, // minLength: 2, maxLength: 12\npatterned?: string, // pattern: /^[a-z][a-z0-9_-]+$/\nbounded_pattern?: string, // minLength: 3, maxLength: 20, pattern: /^[A-Z]+$/\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "string_formats",
+    "input": "{\ndate_time?: string, // format: \"date-time\"\ndate?: string, // format: \"date\"\ntime?: string, // format: \"time\"\nduration?: string, // format: \"duration\"\nemail?: string, // format: \"email\"\nhostname?: string, // format: \"hostname\"\nipv4?: string, // format: \"ipv4\"\nipv6?: string, // format: \"ipv6\"\nuuid?: string, // format: \"uuid\"\nuri?: string, // format: \"uri\"\nuri_reference?: string, // format: \"uri-reference\"\nregex?: string, // format: \"regex\"\njson_pointer?: string, // format: \"json-pointer\"\nrelative_json_pointer?: string, // format: \"relative-json-pointer\"\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "string_content",
+    "input": "{ base64_json?: string }",
+    "output": "unknown"
+  },
+  {
+    "name": "enum_and_const",
+    "input": "{ string_enum?: \"alpha\" | \"beta\" | \"gamma\", number_enum?: 1 | 2.5 | 10, integer_enum?: 1 | 2 | 3, boolean_enum?: true | false, mixed_enum?: \"text\" | 42 | true | null, string_const?: \"fixed\", number_const?: 3.14, boolean_const?: true, null_const?: null, object_const?: {\"fixed\": true}, array_const?: [1, 2, 3] }",
+    "output": "unknown"
+  },
+  {
+    "name": "numeric_constraints",
+    "input": "{\ninclusive_number?: number, // minimum: -10.5, maximum: 10.5\nexclusive_number?: number, // exclusiveMinimum: 0.0, exclusiveMaximum: 100.0\nmultiple_number?: number, // multipleOf: 0.25\nbounded_integer?: integer, // minimum: 1, maximum: 100, multipleOf: 5\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "defaults",
+    "input": "{\nstring_default?: string, // default: \"hello\"\nenum_default?: \"a\" | \"b\", // default: \"a\"\nnumber_default?: number, // default: 4\ninteger_default?: integer, // default: 4\nboolean_default?: boolean, // default: true\nnull_default?: null, // default: null\narray_default?: string[], // default: [\"a\"]\nobject_default?: { value?: string }, // default: {\"value\": \"a\"}\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "metadata_annotations",
+    "input": "// Input Title\n//\n// Top-level input description.\n// Example: {\"value\": \"example\"}\n{\n// Value Title\n//\n// Property description.\n// Examples:\n// - \"first\"\n// - \"second\"\nvalue?: string, // default: \"fallback\"\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "simple_arrays",
+    "input": "{ strings?: string[], integers?: integer[], objects?: { id: string, count?: integer }[], nested_arrays?: number[][] }",
+    "output": "unknown"
+  },
+  {
+    "name": "array_constraints",
+    "input": "{\nbounded?: string[], // minItems: 1, maxItems: 5\nunique?: integer[],\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "tuple_arrays",
+    "input": "{ closed_tuple?: [item0?: string, item1?: integer, item2?: boolean], open_tuple?: [item0?: string, item1?: integer, ...items: number[]] }",
+    "output": "unknown"
+  },
+  {
+    "name": "array_contains",
+    "input": "{ values?: string[] }",
+    "output": "unknown"
+  },
+  {
+    "name": "object_required_optional",
+    "input": "{ required_value: string, optional_value?: number, nested: { required_nested: boolean, optional_nested?: integer } }",
+    "output": "unknown"
+  },
+  {
+    "name": "additional_properties",
+    "input": "{ closed?: { known?: string }, open?: { known?: string, [key: string]: any }, string_map?: { [key: string]: string } }",
+    "output": "unknown"
+  },
+  {
+    "name": "pattern_properties",
+    "input": "{ labels?: object }",
+    "output": "unknown"
+  },
+  {
+    "name": "object_name_and_count_constraints",
+    "input": "{ constrained_object?: { [key: string]: string } }",
+    "output": "unknown"
+  },
+  {
+    "name": "object_dependencies",
+    "input": "{ config?: { credit_card?: string, billing_address?: string, mode?: string, detail?: string } }",
+    "output": "unknown"
+  },
+  {
+    "name": "one_of",
+    "input": "{\n// Exactly one alternative.\nvalue?:\n | string // default: \"fallback\"\n// Numeric alternative.\n | number\n | { id: string }\n,\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "any_of",
+    "input": "{\nvalue?:\n | string // minLength: 1\n | number // minimum: 0.0\n | null\n,\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "all_of",
+    "input": "{\nvalue?:\n & { id: string }\n & {\ncount: integer, // minimum: 0\n}\n,\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "not_schema",
+    "input": "{ value?: Exclude<any, \"forbidden\"> }",
+    "output": "unknown"
+  },
+  {
+    "name": "conditional_schema",
+    "input": "{ config?: { kind?: \"text\" | \"count\", value?: any } }",
+    "output": "unknown"
+  },
+  {
+    "name": "defs_and_ref",
+    "input": "{\nid: string, // pattern: /^[a-f0-9]{8}$/\nrecord?: {\nid: any, // $ref: \"#/$defs/identifier\"\nlabel?: string,\n},\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "legacy_definitions_ref",
+    "input": "{ id?: any }",
+    "output": "unknown"
+  },
+  {
+    "name": "recursive_ref",
+    "input": "{\nroot?: {\nvalue: string,\nchildren?: Array<\nany // $ref: \"#/$defs/node\"\n>,\n},\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "dynamic_ref",
+    "input": "{ root?: { value?: string, child?: any } }",
+    "output": "unknown"
+  },
+  {
+    "name": "unevaluated_keywords",
+    "input": "{ object_value?: { known?: string }, array_value?: [item0?: string, ...items: any[]] }",
+    "output": "unknown"
+  },
+  {
+    "name": "boolean_schemas",
+    "input": "{ allow_anything?: any, allow_nothing?: never }",
+    "output": "unknown"
+  },
+  {
+    "name": "schema_identity",
+    "input": "{ value?: string }",
+    "output": "unknown"
+  },
+  {
+    "name": "openapi_extensions",
+    "input": "{ nullable_string?: string | null, discriminated?: { kind?: \"a\", value?: string } | { kind?: \"b\", value?: number }, singular_example?: string }",
+    "output": "unknown"
+  },
+  {
+    "name": "property_name_edge_cases",
+    "input": "{ hyphen-name: string, space name?: number, 123numeric: integer, quoted\"name?: boolean, $dollar?: string, [key: string]?: object }",
+    "output": "unknown"
+  },
+  {
+    "name": "output_schema",
+    "input": "{ value: string }",
+    "output": "{ echoed: string, count?: integer }"
+  },
+  {
+    "name": "output_empty_object",
+    "input": "object",
+    "output": "object"
+  },
+  {
+    "name": "output_string",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_number",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_integer",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_boolean",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_null",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_unconstrained",
+    "input": "object",
+    "output": "unknown"
+  },
+  {
+    "name": "output_type_union",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_string_enum",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_mixed_enum",
+    "input": "object",
+    "output": "object"
+  },
+  {
+    "name": "output_const",
+    "input": "object",
+    "output": "{ string_const?: \"fixed\", number_const?: 3.14, boolean_const?: true, null_const?: null, object_const?: {\"fixed\": true}, array_const?: [1, 2, 3] }"
+  },
+  {
+    "name": "output_string_constraints",
+    "input": "object",
+    "output": "{\nbounded?: string, // minLength: 2, maxLength: 12\npatterned?: string, // pattern: /^[a-z]+$/\nformatted?: string, // format: \"email\"\n}"
+  },
+  {
+    "name": "output_string_formats",
+    "input": "object",
+    "output": "{\ndate_time?: string, // format: \"date-time\"\ndate?: string, // format: \"date\"\ntime?: string, // format: \"time\"\nduration?: string, // format: \"duration\"\nemail?: string, // format: \"email\"\nhostname?: string, // format: \"hostname\"\nipv4?: string, // format: \"ipv4\"\nipv6?: string, // format: \"ipv6\"\nuuid?: string, // format: \"uuid\"\nuri?: string, // format: \"uri\"\nuri_reference?: string, // format: \"uri-reference\"\nregex?: string, // format: \"regex\"\njson_pointer?: string, // format: \"json-pointer\"\nrelative_json_pointer?: string, // format: \"relative-json-pointer\"\n}"
+  },
+  {
+    "name": "output_string_content",
+    "input": "object",
+    "output": "{ base64_json?: string }"
+  },
+  {
+    "name": "output_numeric_constraints",
+    "input": "object",
+    "output": "{\ninclusive?: number, // minimum: -10.5, maximum: 10.5\nexclusive?: number, // exclusiveMinimum: 0.0, exclusiveMaximum: 100.0\nmultiple?: integer, // multipleOf: 5\n}"
+  },
+  {
+    "name": "output_defaults",
+    "input": "object",
+    "output": "{\nstring_default?: string, // default: \"hello\"\nenum_default?: \"a\" | \"b\", // default: \"a\"\nnumber_default?: number, // default: 4\ninteger_default?: integer, // default: 4\nboolean_default?: boolean, // default: true\nnull_default?: null, // default: null\narray_default?: string[], // default: [\"a\"]\nobject_default?: { value?: string }, // default: {\"value\": \"a\"}\n}"
+  },
+  {
+    "name": "output_array",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_array_constraints",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_closed_tuple",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_open_tuple",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_object_required_optional",
+    "input": "object",
+    "output": "{ required_value: string, optional_value?: number, nested: { required_nested: boolean, optional_nested?: integer } }"
+  },
+  {
+    "name": "output_additional_properties",
+    "input": "object",
+    "output": "{ closed?: { known?: string }, open?: { known?: string, [key: string]: any }, string_map?: { [key: string]: string } }"
+  },
+  {
+    "name": "output_pattern_properties",
+    "input": "object",
+    "output": "// Additional JSON Schema constraints: patternProperties={\"^[0-9]+$\": {\"type\": \"number\"}, \"^x-\": {\"type\": \"string\"}}\nobject"
+  },
+  {
+    "name": "output_object_name_and_count_constraints",
+    "input": "object",
+    "output": "// Additional JSON Schema constraints: propertyNames={\"pattern\": \"^[a-z_]+$\"}; minProperties=1; maxProperties=4\n{ [key: string]: string }"
+  },
+  {
+    "name": "output_object_dependencies",
+    "input": "object",
+    "output": "// Additional JSON Schema constraints: dependentRequired={\"credit_card\": [\"billing_address\"]}; dependentSchemas={\"mode\": {\"properties\": {\"detail\": {\"minLength\": 1}}}}\n{ credit_card?: string, billing_address?: string, mode?: string, detail?: string }"
+  },
+  {
+    "name": "output_one_of",
+    "input": "object",
+    "output": "object"
+  },
+  {
+    "name": "output_any_of",
+    "input": "object",
+    "output": "object"
+  },
+  {
+    "name": "output_all_of",
+    "input": "object",
+    "output": "object"
+  },
+  {
+    "name": "output_not",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_conditional",
+    "input": "object",
+    "output": "// Additional JSON Schema constraints: if={\"properties\": {\"kind\": {\"const\": \"text\"}}, \"required\": [\"kind\"]}; then={\"properties\": {\"value\": {\"type\": \"string\"}}}; else={\"properties\": {\"value\": {\"type\": \"integer\"}}}\n{ kind?: \"text\" | \"count\", value?: any }"
+  },
+  {
+    "name": "output_defs_ref",
+    "input": "object",
+    "output": "{\nid: string, // pattern: /^[a-f0-9]{8}$/\nrecord?: {\nid: string, // pattern: /^[a-f0-9]{8}$/\nlabel?: string,\n},\n}"
+  },
+  {
+    "name": "output_legacy_definitions_ref",
+    "input": "object",
+    "output": "{\nid?: string, // minLength: 3\n}"
+  },
+  {
+    "name": "output_recursive_ref",
+    "input": "object",
+    "output": "unknown"
+  },
+  {
+    "name": "output_dynamic_ref",
+    "input": "object",
+    "output": "{ root?: { value?: string, child?: any } }"
+  },
+  {
+    "name": "output_unevaluated_keywords",
+    "input": "object",
+    "output": "{\n// Additional JSON Schema constraints: unevaluatedProperties=false\nobject_value?: { known?: string },\n// Additional JSON Schema constraints: unevaluatedItems=false\narray_value?: [item0?: string, ...items: any[]],\n}"
+  },
+  {
+    "name": "output_boolean_schemas",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  },
+  {
+    "name": "output_nullable_extension",
+    "input": "object",
+    "output": "{ value?: string | null }"
+  },
+  {
+    "name": "output_openapi_extensions",
+    "input": "object",
+    "output": "{ discriminated?: { kind?: \"a\", value?: string } | { kind?: \"b\", value?: number }, singular_example?: string }"
+  },
+  {
+    "name": "output_property_name_edge_cases",
+    "input": "object",
+    "output": "{ hyphen-name: string, space name?: number, 123numeric: integer, quoted\"name?: boolean, $dollar?: string, [key: string]?: object }"
+  },
+  {
+    "name": "output_metadata",
+    "input": "object",
+    "output": "// Output Title\n//\n// Top-level output description.\n// Example: {\"value\": \"example\"}\n{\n// Output Value Title\n//\n// Output property description.\n// Additional JSON Schema constraints: readOnly=true; writeOnly=false\n// Examples:\n// - \"first\"\n// - \"second\"\nvalue?: string, // default: \"fallback\"\n}"
+  },
+  {
+    "name": "output_schema_identity",
+    "input": "object",
+    "output": "{ value?: string }"
+  },
+  {
+    "name": "tool_meta_with_output",
+    "input": "object",
+    "output": "{ value: string }"
+  }
+]

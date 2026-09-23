@@ -1,0 +1,72 @@
+[
+  {
+    "name": "input_valid_baseline",
+    "input": "{ value?: string }",
+    "output": "unknown"
+  },
+  {
+    "name": "input_unknown_keyword",
+    "input": "{ value?: string }",
+    "output": "unknown"
+  },
+  {
+    "name": "input_contradictory_allof",
+    "input": "{ value?: string & number }",
+    "output": "unknown"
+  },
+  {
+    "name": "input_false_subschema",
+    "input": "{ value?: never }",
+    "output": "unknown"
+  },
+  {
+    "name": "input_recursive_ref_valid",
+    "input": "{\nroot?: {\nvalue?: string,\nchild?: any, // $ref: \"#/$defs/node\"\n},\n}",
+    "output": "unknown"
+  },
+  {
+    "name": "input_openapi_nullable",
+    "input": "{ value?: string | null }",
+    "output": "unknown"
+  },
+  {
+    "name": "output_valid_baseline",
+    "input": "object",
+    "output": "{ value?: string }"
+  },
+  {
+    "name": "output_unknown_keyword",
+    "input": "object",
+    "output": "{ value?: string }"
+  },
+  {
+    "name": "output_contradictory_allof",
+    "input": "object",
+    "output": "{ value?: string & number }"
+  },
+  {
+    "name": "output_openapi_nullable",
+    "input": "object",
+    "output": "{ value?: string | null }"
+  },
+  {
+    "name": "input_invalid_empty_enum",
+    "input": "{ value?: any }",
+    "output": "unknown"
+  },
+  {
+    "name": "input_unresolved_ref",
+    "input": "{ value?: any }",
+    "output": "unknown"
+  },
+  {
+    "name": "output_invalid_pattern_syntax",
+    "input": "object",
+    "output": "{\nvalue?: string, // pattern: /[/\n}"
+  },
+  {
+    "name": "output_unresolved_ref",
+    "input": "object",
+    "output": "{ [key: string]: any }"
+  }
+]

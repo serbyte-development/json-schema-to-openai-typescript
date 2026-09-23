@@ -1,4 +1,7 @@
+import assert from "node:assert/strict"
+import { readFileSync, writeFileSync } from "node:fs"
 import { createServer } from "node:http"
+import { resolve } from "node:path"
 
 import {
   Client,
@@ -9,6 +12,9 @@ import { toNodeHandler } from "@modelcontextprotocol/node"
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server"
 
 import { PROBE_TOOLS } from "./tools.js"
+
+const fixturePath = resolve("fixtures/connector-discovery/before.json")
+const mode = process.argv[2] ?? "--stdout"
 
 function createProbeServer(): McpServer {
   const server = new McpServer({
@@ -55,7 +61,20 @@ try {
       `Expected ${PROBE_TOOLS.length} tools, received ${result.tools.length}`,
     )
   }
-  process.stdout.write(`${JSON.stringify(result.tools, null, 2)}\n`)
+  const serialized = `${JSON.stringify(result.tools, null, 2)}\n`
+  switch (mode) {
+    case "--write":
+      writeFileSync(fixturePath, serialized)
+      break
+    case "--check":
+      assert.equal(readFileSync(fixturePath, "utf8"), serialized)
+      break
+    case "--stdout":
+      process.stdout.write(serialized)
+      break
+    default:
+      throw new Error(`Unknown mode: ${mode}`)
+  }
 } finally {
   await client.close().catch(() => undefined)
   await mcpHandler.close()

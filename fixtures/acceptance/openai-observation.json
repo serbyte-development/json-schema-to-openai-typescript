@@ -1,0 +1,45 @@
+{
+  "connectorPrefix": "mcp__test_openai_typescript__",
+  "calls": [
+    {
+      "name": "input_valid_baseline",
+      "ok": true
+    },
+    {
+      "name": "input_unknown_keyword",
+      "ok": true
+    },
+    {
+      "name": "input_contradictory_allof",
+      "ok": true
+    },
+    {
+      "name": "input_false_subschema",
+      "ok": true
+    },
+    {
+      "name": "input_recursive_ref_valid",
+      "ok": true
+    },
+    {
+      "name": "input_openapi_nullable",
+      "ok": true
+    },
+    {
+      "name": "output_valid_baseline",
+      "ok": true
+    },
+    {
+      "name": "output_unknown_keyword",
+      "ok": true
+    },
+    {
+      "name": "output_contradictory_allof",
+      "ok": true
+    },
+    {
+      "name": "output_openapi_nullable",
+      "ok": true
+    }
+  ]
+}

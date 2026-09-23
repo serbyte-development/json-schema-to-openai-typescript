@@ -1,0 +1,22 @@
+[
+  {
+    "name": "input_invalid_type_name",
+    "error": "Invalid MCP tool schema for tool 'input_invalid_type_name'"
+  },
+  {
+    "name": "input_invalid_type_value",
+    "error": "Invalid MCP tool schema for tool 'input_invalid_type_value'"
+  },
+  {
+    "name": "input_invalid_properties_array",
+    "error": "Invalid MCP tool schema for tool 'input_invalid_properties_array'"
+  },
+  {
+    "name": "input_invalid_property_schema",
+    "error": "Invalid MCP tool schema for tool 'input_invalid_property_schema'"
+  },
+  {
+    "name": "input_invalid_pattern_syntax",
+    "error": "Invalid MCP tool schema for tool 'input_invalid_pattern_syntax'"
+  }
+]

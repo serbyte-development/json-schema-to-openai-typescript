@@ -1,0 +1,21 @@
+{
+  "connectorPrefix": "mcp__test_openai_typescript__",
+  "calls": [
+    {
+      "name": "input_invalid_empty_enum",
+      "ok": true
+    },
+    {
+      "name": "input_unresolved_ref",
+      "ok": true
+    },
+    {
+      "name": "output_invalid_pattern_syntax",
+      "ok": true
+    },
+    {
+      "name": "output_unresolved_ref",
+      "ok": true
+    }
+  ]
+}

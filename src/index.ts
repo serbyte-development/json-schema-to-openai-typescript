@@ -1,4 +1,7 @@
-import { renderHarmonyBasedSchema } from "./harmony-schema.js"
+import {
+  renderHarmonyBasedOutputSchema,
+  renderHarmonyBasedSchema,
+} from "./harmony-schema.js"
 
 export type JsonSchema = Record<string, unknown>
 
@@ -6,14 +9,21 @@ export interface McpToolDefinition {
   name: string
   description?: string
   inputSchema: JsonSchema
+  outputSchema?: JsonSchema
   annotations?: Record<string, unknown>
 }
 
-/** Render MCP tool definitions into OpenAI's TypeScript-like tool schema representation. */
-export function renderOpenAITypescript(
+export interface OpenAIConnectorRenderOptions {
+  prefix?: string
+}
+
+/** Render MCP tools using OpenAI's observed connector signature shape. */
+export function renderOpenAIConnectorTypescript(
   tools: readonly McpToolDefinition[],
+  options: OpenAIConnectorRenderOptions = {},
 ): string {
-  return `${tools.map(renderTool).join("\n")}\n`
+  const prefix = options.prefix ?? ""
+  return `${tools.map((tool) => renderConnectorTool(tool, prefix)).join("\n")}\n`
 }
 
 /** Render one JSON Schema as OpenAI TypeScript. */
@@ -21,38 +31,17 @@ export function renderJsonSchemaAsOpenAITypescript(schema: JsonSchema): string {
   return renderHarmonyBasedSchema(schema)
 }
 
-function renderTool(tool: McpToolDefinition): string {
-  const lines: string[] = []
-  pushDescription(lines, tool.description)
-
-  if (isEmptyObjectSchema(tool.inputSchema)) {
-    lines.push(`type ${tool.name} = () => any;`)
-    return lines.join("\n")
-  }
-
-  lines.push(
-    `type ${tool.name} = (_: ${renderHarmonyBasedSchema(tool.inputSchema)}) => any;`,
-  )
-  return lines.join("\n")
+/** Render one MCP output JSON Schema as OpenAI's observed return-type representation. */
+export function renderJsonSchemaAsOpenAIOutputTypescript(
+  schema: JsonSchema,
+): string {
+  return renderHarmonyBasedOutputSchema(schema)
 }
 
-function pushDescription(
-  lines: string[],
-  description: string | undefined,
-): void {
-  if (!description) return
-  for (const line of description.split("\n")) lines.push(`// ${line}`)
-}
-
-function isEmptyObjectSchema(schema: JsonSchema): boolean {
-  return (
-    schema.type === "object" &&
-    Object.keys(asRecord(schema.properties)).length === 0
-  )
-}
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
+function renderConnectorTool(tool: McpToolDefinition, prefix: string): string {
+  const input = renderHarmonyBasedSchema(tool.inputSchema)
+  const output = tool.outputSchema
+    ? renderHarmonyBasedOutputSchema(tool.outputSchema)
+    : "unknown"
+  return `${prefix}${tool.name}(args: ${input}): Promise<${output}>;`
 }

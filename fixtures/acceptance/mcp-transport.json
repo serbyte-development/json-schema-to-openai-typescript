@@ -1,0 +1,26 @@
+[
+  {
+    "name": "transport_valid_object_input",
+    "acceptedByOfficialClient": true
+  },
+  {
+    "name": "transport_string_root_input",
+    "acceptedByOfficialClient": false,
+    "error": "Invalid result for tools/list: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"object\"\n    ],\n    \"path\": [\n      \"tools\",\n      0,\n      \"inputSchema\",\n      \"type\"\n    ],\n    \"message\": \"Invalid input: expected \\\"object\\\"\"\n  }\n]"
+  },
+  {
+    "name": "transport_array_root_input",
+    "acceptedByOfficialClient": false,
+    "error": "Invalid result for tools/list: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"object\"\n    ],\n    \"path\": [\n      \"tools\",\n      0,\n      \"inputSchema\",\n      \"type\"\n    ],\n    \"message\": \"Invalid input: expected \\\"object\\\"\"\n  }\n]"
+  },
+  {
+    "name": "transport_missing_root_type",
+    "acceptedByOfficialClient": false,
+    "error": "Invalid result for tools/list: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"object\"\n    ],\n    \"path\": [\n      \"tools\",\n      0,\n      \"inputSchema\",\n      \"type\"\n    ],\n    \"message\": \"Invalid input: expected \\\"object\\\"\"\n  }\n]"
+  },
+  {
+    "name": "transport_union_root_type",
+    "acceptedByOfficialClient": false,
+    "error": "Invalid result for tools/list: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"object\"\n    ],\n    \"path\": [\n      \"tools\",\n      0,\n      \"inputSchema\",\n      \"type\"\n    ],\n    \"message\": \"Invalid input: expected \\\"object\\\"\"\n  }\n]"
+  }
+]

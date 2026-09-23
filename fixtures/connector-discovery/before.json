@@ -915,7 +915,8 @@
               "type": "array",
               "items": {
                 "$ref": "#/$defs/node"
-              }      }
+              }
+            }
           },
           "required": [
             "value"
@@ -1002,10 +1003,10 @@
     "description": "Probe schema identity and comment keywords.",
     "inputSchema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
       "$id": "https://example.test/openai-schema-probe/input",
       "$anchor": "probe-input",
       "$comment": "Top-level schema comment.",
-      "type": "object",
       "properties": {
         "value": {
           "type": "string"

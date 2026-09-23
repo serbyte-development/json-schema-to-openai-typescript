@@ -3,7 +3,11 @@
 [![CI](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml)
 [![Node.js 22+](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-Convert JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema representation observed in OpenAI MCP tool definitions.
+The Problem:
+OpenAI transforms MCP json schemas into TypeScript-like schema text before sending them to the model. When parsing your schema fails the model might only see a `unknown` type, with no warning/error message. 
+
+The Solution:
+This package converts JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema representation observed in OpenAI MCP tool definitions across vigourse testing.
 
 [Install](#install) • [Quick start](#quick-start) • [CLI](#cli) • [API](#api) • [Schema support](#schema-support) • [Compatibility](#compatibility)
 
@@ -15,7 +19,7 @@ Render standalone JSON Schema, MCP `inputSchema`, function/tool schemas, or JSON
 ## Features
 
 - Render standalone JSON Schema without a tool wrapper.
-- Render MCP-style tool definitions as `type <name> = (...) => any;` declarations.
+- Render MCP tool definitions as OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
 - Render descriptions, titles, string examples, defaults, and common constraints as comments.
 - Match captured ChatGPT/MCP formatting through byte-for-byte fixture tests.
 - Ship with zero runtime dependencies.
@@ -59,34 +63,36 @@ query: string, // minLength: 1
 }
 ```
 
-Render MCP-style tool definitions:
+Render MCP tool definitions in the current OpenAI connector shape:
 
 ```ts
-import { renderOpenAITypescript } from "json-schema-to-openai-typescript"
+import { renderOpenAIConnectorTypescript } from "json-schema-to-openai-typescript"
 
-const output = renderOpenAITypescript([
-  {
-    name: "search",
-    description: "Search documents.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        query: { type: "string", description: "Search query." },
+const output = renderOpenAIConnectorTypescript(
+  [
+    {
+      name: "search",
+      description: "Search documents.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "Search query." },
+        },
+        required: ["query"],
       },
-      required: ["query"],
     },
-  },
-])
+  ],
+  { prefix: "mcp__my_connector__" },
+)
 ```
 
 Output:
 
 ```ts
-// Search documents.
-type search = (_: {
+mcp__my_connector__search(args: {
 // Search query.
 query: string,
-}) => any;
+}): Promise<unknown>;
 ```
 
 ## CLI
@@ -97,10 +103,16 @@ Render an array of MCP-style tool definitions from a JSON file:
 npx json-schema-to-openai-typescript tools.json
 ```
 
-The input array must contain `name`, optional `description`, and `inputSchema` fields. Output is written to stdout, so it can be redirected directly:
+The input array must contain `name`, optional `description`, `inputSchema`, and optional `outputSchema` fields. The CLI emits connector-style signatures. Pass the connector namespace prefix when you want the exact Code Mode naming shape:
 
 ```bash
-npx json-schema-to-openai-typescript tools.json > tools.ts
+npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__
+```
+
+Output is written to stdout, so it can be redirected directly:
+
+```bash
+npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__ > tools.ts
 ```
 
 ## API
@@ -108,23 +120,40 @@ npx json-schema-to-openai-typescript tools.json > tools.ts
 | Export | Purpose |
 | --- | --- |
 | `renderJsonSchemaAsOpenAITypescript(schema)` | Render one standalone JSON Schema. |
-| `renderOpenAITypescript(tools)` | Render MCP-style tool definitions with `type <name> = ...` wrappers. |
+| `renderJsonSchemaAsOpenAIOutputTypescript(schema)` | Render one MCP `outputSchema` using OpenAI's observed return-type behavior. |
+| `renderOpenAIConnectorTypescript(tools, options)` | Render current connector-style `mcp__<connector>__<tool>(args: ...): Promise<...>;` signatures. |
 | `JsonSchema` | Type alias for schema input objects. |
 | `McpToolDefinition` | Type for MCP-style tool input. |
 
 ## Schema support
 
-The renderer currently covers:
+The renderer currently covers the captured OpenAI input-schema behavior for:
 
 - nested objects and arrays
 - required and optional properties
-- string enums
-- `oneOf`, nullable schemas, and `type` unions
-- titles, descriptions, and string examples as comments
-- defaults and common numeric, string, and array constraints
+- string, numeric, boolean, mixed enums, and `const`
+- `oneOf`, `anyOf`, `allOf`, `not`, nullable schemas, and `type` unions
+- tuples through `prefixItems`
+- `additionalProperties`, boolean schemas, and OpenAPI `nullable`
+- local `$defs` references and the observed recursive/dynamic-ref fallbacks
+- titles, descriptions, examples, defaults, and validation constraints as observed comments
 - JSON Schema `integer` preserved as `integer`
 
-MCP annotations are accepted by the tool type but are not emitted in the observed output format.
+`renderJsonSchemaAsOpenAIOutputTypescript` separately preserves the observed MCP output-schema behavior, including detailed object returns and OpenAI's observed `object`, `{ [key: string]: any }`, and `unknown` degradation cases.
+
+The comprehensive connector probe currently matches **76/76 captured input schemas** and **43/43 captured output schemas** byte-for-byte.
+
+Connector-style wrappers can be rendered with an optional namespace prefix:
+
+```ts
+renderOpenAIConnectorTypescript(tools, {
+  prefix: "mcp__my_connector__",
+})
+```
+
+The comprehensive fixture verifies the complete 76-tool signature surface byte-for-byte, including `Promise<unknown>` when no `outputSchema` is present.
+
+MCP annotations are accepted by the tool type. Protocol-level MCP `_meta` was independently probed and did not collapse an ordinary output schema in the current capture.
 
 > [!IMPORTANT]
 > This package produces TypeScript-like schema text, not compilable TypeScript interfaces. Schema constructs outside the supported conversion rules can fall back to `any`.
@@ -133,10 +162,24 @@ MCP annotations are accepted by the tool type but are not emitted in the observe
 
 The standalone renderer is adapted from [OpenAI Harmony](https://github.com/openai/harmony)'s published JSON Schema-to-TypeScript conversion logic. This project preserves additional formatting observed in ChatGPT/MCP tool schemas, including `integer` spelling and `Array<T>` formatting.
 
-The captured compatibility fixture is checked byte-for-byte:
+The connector-discovery contract lives under `fixtures/connector-discovery/`. It contains the 76-tool raw MCP schema capture, the exact OpenAI Code Mode connector rendering captured programmatically from `ALL_TOOLS`, and mechanically normalized input/output schema bodies used by the renderer tests.
 
-- [`fixtures/before.json`](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/blob/main/fixtures/before.json) contains the MCP tool definitions.
-- [`fixtures/after.ts`](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/blob/main/fixtures/after.ts) contains the matching observed OpenAI TypeScript representation.
+The generated support matrix is maintained at `wiki/pages/schema-support-matrix.md`, and the reproducible capture procedure is documented at `wiki/pages/capture-workflow.md`.
+
+Development also includes a separate acceptance probe that distinguishes MCP transport rejection, JSON Schema 2020-12 validity, reference/regex compilation, OpenAI connector visibility, model-facing transformation, and tool callability. See `wiki/pages/acceptance-probe.md`.
+
+Observed acceptance boundaries include:
+
+- MCP tool `inputSchema` must have root `type: "object"`; string, array, missing-type, and object/null-union roots are rejected by the official MCP client before OpenAI.
+- Clearly invalid nested schema shapes are rejected by OpenAI with `Invalid MCP tool schema for tool ...`.
+- Unknown extension keywords are accepted and omitted from the rendered type in the current capture.
+- Valid-but-unsatisfiable `allOf` schemas are accepted and rendered structurally.
+- An empty enum input is accepted and degrades to `any`.
+- An unresolved input `$ref` is accepted and degrades to `any`.
+- A malformed regex in an input `pattern` is rejected, while the analogous malformed output `pattern` is accepted and preserved as a comment.
+- An unresolved output `$ref` is accepted and degrades the output to `{ [key: string]: any }`.
+
+The captured acceptance cases are regression-tested byte-for-byte alongside the main 76-tool renderer fixture.
 
 ## Development
 
@@ -150,7 +193,7 @@ npm run check
 Render the included MCP fixture locally:
 
 ```bash
-npm run render -- fixtures/before.json
+npm run render -- fixtures/connector-discovery/before.json --prefix mcp__test_openai_typescript__
 ```
 
 Developed & maintained by [Serbyte Development](https://www.serbyte.net/) · [GitHub](https://github.com/Serbyte-Development)

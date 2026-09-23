@@ -1,6 +1,6 @@
 {
   "name": "json-schema-to-openai-typescript",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Convert JSON Schema into OpenAIs TypeScript-like schema representation for tool schemas, MCP, and standalone structured schemas.",
   "license": "MIT",
   "author": "Serbyte Development",
@@ -32,7 +32,24 @@
   "scripts": {
     "render": "npm run build --silent && node dist/cli.js",
     "probe:mcp": "tsx probe-mcp/server.ts",
+    "probe:acceptance:local": "tsx probe-mcp/acceptance-local.ts --write",
+    "probe:acceptance:local:check": "tsx probe-mcp/acceptance-local.ts --check",
+    "probe:acceptance:select": "tsx probe-mcp/acceptance-select.ts",
+    "probe:acceptance:normalize": "tsx probe-mcp/acceptance-normalize.ts --write",
+    "probe:acceptance:normalize:check": "tsx probe-mcp/acceptance-normalize.ts --check",
+    "probe:acceptance:report": "tsx probe-mcp/acceptance-report.ts --write",
+    "probe:acceptance:report:check": "tsx probe-mcp/acceptance-report.ts --check",
+    "probe:acceptance:finalize": "npm run probe:acceptance:normalize && npm run probe:acceptance:report",
+    "probe:acceptance:verify": "npm run probe:acceptance:local:check && npm run probe:acceptance:normalize:check && npm run probe:acceptance:report:check",
     "probe:schemas": "tsx probe-mcp/verify.ts",
+    "probe:capture:before": "tsx probe-mcp/verify.ts --write",
+    "probe:capture:before:check": "tsx probe-mcp/verify.ts --check",
+    "probe:normalize": "tsx probe-mcp/normalize-capture.ts --write",
+    "probe:normalize:check": "tsx probe-mcp/normalize-capture.ts --check",
+    "probe:support-matrix": "tsx probe-mcp/generate-support-matrix.ts --write",
+    "probe:support-matrix:check": "tsx probe-mcp/generate-support-matrix.ts --check",
+    "probe:capture:finalize": "npm run probe:normalize && npm run probe:support-matrix",
+    "probe:capture:verify": "npm run probe:capture:before:check && npm run probe:normalize:check && npm run probe:support-matrix:check",
     "probe:tunnel": "ngrok http 3210",
     "test": "rm -rf .test-dist && tsc -p tsconfig.test.json && node --test .test-dist/test/*.test.js",
     "lint": "biome lint .",
@@ -40,8 +57,9 @@
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
     "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
-    "check": "biome check . && npm run typecheck && npm test && npm run build",
-    "prepack": "npm run build"
+    "check": "biome check . && npm run probe:capture:verify && npm run probe:acceptance:verify && npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run check"
   },
   "keywords": [
     "json-schema-to-typescript",
@@ -73,6 +91,7 @@
     "@modelcontextprotocol/server": "^2.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^22.13.17",
+    "ajv": "^8.20.0",
     "express": "^5.2.1",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3"

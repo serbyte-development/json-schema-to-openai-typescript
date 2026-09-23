@@ -1,0 +1,18 @@
+[
+  {
+    "name": "input_invalid_empty_enum",
+    "evidence": "Connector refresh succeeded while this tool was present in the four-tool ambiguous batch."
+  },
+  {
+    "name": "input_unresolved_ref",
+    "evidence": "Connector refresh succeeded while this tool was present in the four-tool ambiguous batch."
+  },
+  {
+    "name": "output_invalid_pattern_syntax",
+    "evidence": "Connector refresh succeeded while this tool was present in the four-tool ambiguous batch."
+  },
+  {
+    "name": "output_unresolved_ref",
+    "evidence": "Connector refresh succeeded while this tool was present in the four-tool ambiguous batch."
+  }
+]

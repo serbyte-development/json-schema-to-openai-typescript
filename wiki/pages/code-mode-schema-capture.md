@@ -32,7 +32,7 @@ mcp__test_openai_typescript__output_schema(args: { value: string }): Promise<{ e
 }
 ```
 
-The fenced TypeScript inside `description` is the rendered model-facing tool signature observed by the agent. The argument-schema body is the primary compatibility target. The return type is also relevant when an MCP `outputSchema` is present.
+The fenced TypeScript inside `description` is the rendered model-facing tool signature observed by the agent. Current Code Mode connector tools use the `mcp__<connector>__<tool>(args: ...): Promise<...>;` shape. The argument schema and return type are both part of the compatibility target.
 
 ## Capture flow
 
@@ -79,25 +79,7 @@ For byte-sensitive captures:
 - Verify tool counts and known sentinel signatures after writing the fixture.
 - When practical, compare hashes before and after persistence.
 
-The existing Shellby comparison confirmed that removing only the connector namespace/callable wrapper leaves argument-schema bodies that match the captured `fixtures/after.ts` representation byte-for-byte.
-
-## Wrapper versus schema body
-
-Connector discovery currently presents tools as:
-
-```ts
-mcp__Austins_Macbook__shell_run(args: { ... }): Promise<unknown>;
-```
-
-The earlier Shellby fixture stores the equivalent body as:
-
-```ts
-type shell_run = (_: { ... }) => any;
-```
-
-The wrapper difference is secondary for input-schema projection. The `{ ... }` body is the transformation target.
-
-Return wrappers become meaningful when `outputSchema` changes `Promise<unknown>` into a rendered return type, so output-schema captures must preserve the return type.
+The current connector wrapper is part of the observed output contract. Captures preserve the full namespaced callable signature, including `args:` and the `Promise<...>` return type.
 
 ## Current fixture strategy
 
@@ -107,3 +89,5 @@ Keep two layers:
 2. **Normalized compatibility fixtures**: mechanically extracted argument and return schema bodies used for renderer tests.
 
 This separation makes the raw capture auditable while allowing the renderer tests to ignore connector naming and wrapper details that are outside the JSON-Schema projection itself.
+
+The normalized fixture lives at `fixtures/connector-discovery/normalized.json`. Each entry contains the tool name plus the exact extracted `input` and `output` schema-body strings. `probe-mcp/normalize-capture.ts` regenerates it from `after.md`, and `npm run probe:normalize:check` verifies that the committed normalized fixture is byte-for-byte current.

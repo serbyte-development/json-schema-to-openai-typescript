@@ -37,6 +37,12 @@ Validate and print the exact `tools/list` payload through the official MCP clien
 npm run probe:schemas
 ```
 
+Write that exact payload to the connector-discovery fixture:
+
+```bash
+npm run probe:capture:before
+```
+
 Expose the running server with ngrok:
 
 ```bash
@@ -44,3 +50,33 @@ npm run probe:tunnel
 ```
 
 Use the resulting HTTPS URL with `/mcp` as the connector URL.
+
+The server uses one `/mcp` endpoint for both the renderer and acceptance probes. `renderer` is the normal/default mode; acceptance modes temporarily replace that tool surface without changing the connector URL.
+
+Switch modes with:
+
+```bash
+npm run probe:acceptance:select -- renderer
+npm run probe:acceptance:select -- safe
+npm run probe:acceptance:select -- ambiguous
+npm run probe:acceptance:select -- tool input_invalid_type_name
+```
+
+Generate and verify its local JSON Schema/MCP evidence with:
+
+```bash
+npm run probe:acceptance:local
+npm run probe:acceptance:report
+npm run probe:acceptance:verify
+```
+
+After refreshing the existing ChatGPT connector, capture the OpenAI registry observation and run `npm run probe:acceptance:finalize` to join visibility, rendering, and callability with the local validity data.
+
+After the OpenAI-side registry descriptions have been captured into `fixtures/connector-discovery/after.md`, regenerate and verify the derived fixtures:
+
+```bash
+npm run probe:capture:finalize
+npm run probe:capture:verify
+```
+
+See `wiki/pages/capture-workflow.md` for the complete boundary between locally reproducible capture steps and the ChatGPT-side registry capture.

@@ -1,0 +1,413 @@
+[
+  {
+    "name": "input_valid_baseline",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "input_unknown_keyword",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "input_contradictory_allof",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "input_false_subschema",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "input_recursive_ref_valid",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "input_openapi_nullable",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "input_invalid_type_name",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/type enum: must be equal to one of the allowed values",
+        "/properties/value/type type: must be array",
+        "/properties/value/type anyOf: must match a schema in anyOf"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_type_value",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/type enum: must be equal to one of the allowed values",
+        "/properties/value/type type: must be array",
+        "/properties/value/type anyOf: must match a schema in anyOf"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_properties_array",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties type: must be object"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_property_schema",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_required_type",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/required type: must be array"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_required_duplicates",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/required uniqueItems: must NOT have duplicate items (items ## 1 and 0 are identical)"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_items_array_2020",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/items type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_prefix_items_type",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/prefixItems type: must be array"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_empty_enum",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "compile-error",
+      "metaSchemaErrors": [],
+      "compileError": "enum must have non-empty array"
+    }
+  },
+  {
+    "name": "input_invalid_min_length",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/minLength minimum: must be >= 0"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_max_items",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/maxItems type: must be integer"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_multiple_of_zero",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/multipleOf exclusiveMinimum: must be > 0"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_pattern_type",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/pattern type: must be string"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_pattern_syntax",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "invalid-regex",
+      "metaSchemaErrors": [],
+      "compileError": "Invalid regular expression: /[/u: Unterminated character class"
+    }
+  },
+  {
+    "name": "input_unresolved_ref",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "unresolved-ref",
+      "metaSchemaErrors": [],
+      "compileError": "can't resolve reference #/$defs/missing from id #"
+    }
+  },
+  {
+    "name": "input_invalid_ref_type",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/$ref type: must be string"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_additional_properties",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/additionalProperties type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_dependent_required",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/dependentRequired/credit_card type: must be array"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_dependent_schemas",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/dependentSchemas/mode type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_if",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/if type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_not",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/not type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "input_invalid_format_type",
+    "input": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/format type: must be string"
+      ]
+    }
+  },
+  {
+    "name": "output_valid_baseline",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "output_invalid_type_name",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties/value/type enum: must be equal to one of the allowed values",
+        "/properties/value/type type: must be array",
+        "/properties/value/type anyOf: must match a schema in anyOf"
+      ]
+    }
+  },
+  {
+    "name": "output_invalid_required_type",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/required type: must be array"
+      ]
+    }
+  },
+  {
+    "name": "output_invalid_properties_array",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/properties type: must be object"
+      ]
+    }
+  },
+  {
+    "name": "output_invalid_pattern_syntax",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": true,
+      "compileStatus": "invalid-regex",
+      "metaSchemaErrors": [],
+      "compileError": "Invalid regular expression: /[/u: Unterminated character class"
+    }
+  },
+  {
+    "name": "output_unresolved_ref",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": true,
+      "compileStatus": "unresolved-ref",
+      "metaSchemaErrors": [],
+      "compileError": "can't resolve reference #/$defs/missing from id #"
+    }
+  },
+  {
+    "name": "output_invalid_additional_properties",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": false,
+      "compileStatus": "invalid-schema",
+      "metaSchemaErrors": [
+        "/additionalProperties type: must be object,boolean"
+      ]
+    }
+  },
+  {
+    "name": "output_unknown_keyword",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "output_contradictory_allof",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  },
+  {
+    "name": "output_openapi_nullable",
+    "input": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    },
+    "output": {
+      "metaSchemaValid": true,
+      "compileStatus": "ok",
+      "metaSchemaErrors": []
+    }
+  }
+]
