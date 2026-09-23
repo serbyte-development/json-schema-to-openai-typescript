@@ -2,9 +2,8 @@ import assert from "node:assert/strict"
 import { readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-import { Ajv2020, type ErrorObject } from "ajv/dist/2020.js"
-
 import type { JsonSchema } from "../../src/index.js"
+import { inspectSchema } from "../../src/validator.js"
 import { listToolsThroughOfficialClient } from "../mcp.js"
 import { INGESTION_CASES, MCP_TRANSPORT_CASES } from "./cases.js"
 
@@ -55,43 +54,6 @@ async function inspectTransportCase(
   }
 }
 
-function inspectSchema(schema: JsonSchema): SchemaInspection {
-  const ajv = new Ajv2020({ strict: false, validateFormats: false })
-  const metaSchemaValid = ajv.validateSchema(schema)
-  const metaSchemaErrors = (ajv.errors ?? []).map(
-    (error: ErrorObject) =>
-      `${error.instancePath || "/"} ${error.keyword}: ${error.message ?? "invalid"}`,
-  )
-
-  if (!metaSchemaValid) {
-    return {
-      metaSchemaValid: false,
-      compileStatus: "invalid-schema",
-      metaSchemaErrors,
-    }
-  }
-
-  try {
-    ajv.compile(schema)
-    return { metaSchemaValid: true, compileStatus: "ok", metaSchemaErrors }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    const lower = message.toLowerCase()
-    const compileStatus = lower.includes("can't resolve reference")
-      ? "unresolved-ref"
-      : lower.includes("invalid regular expression") ||
-          lower.includes("invalid pattern")
-        ? "invalid-regex"
-        : "compile-error"
-    return {
-      metaSchemaValid: true,
-      compileStatus,
-      metaSchemaErrors,
-      compileError: message,
-    }
-  }
-}
-
 const tools = await listToolsThroughOfficialClient(
   INGESTION_CASES,
   "openai-json-schema-ingestion-check",
@@ -101,9 +63,13 @@ assert.equal(tools.length, INGESTION_CASES.length)
 const before = `${JSON.stringify(tools, null, 2)}\n`
 const inspections: IngestionInspection[] = tools.map((tool) => ({
   name: tool.name,
-  input: inspectSchema(tool.inputSchema as JsonSchema),
+  input: serializeInspection(inspectSchema(tool.inputSchema as JsonSchema)),
   ...(tool.outputSchema
-    ? { output: inspectSchema(tool.outputSchema as JsonSchema) }
+    ? {
+        output: serializeInspection(
+          inspectSchema(tool.outputSchema as JsonSchema),
+        ),
+      }
     : {}),
 }))
 const validity = `${JSON.stringify(inspections, null, 2)}\n`
@@ -112,6 +78,22 @@ const transport = `${JSON.stringify(
   null,
   2,
 )}\n`
+
+function serializeInspection(
+  inspection: ReturnType<typeof inspectSchema>,
+): SchemaInspection {
+  return {
+    metaSchemaValid: inspection.metaSchemaValid,
+    compileStatus: inspection.compileStatus,
+    metaSchemaErrors: inspection.metaSchemaErrors.map(
+      (error) =>
+        `${error.instancePath || "/"} ${error.keyword}: ${error.message ?? "invalid"}`,
+    ),
+    ...(inspection.compileError
+      ? { compileError: inspection.compileError }
+      : {}),
+  }
+}
 
 switch (mode) {
   case "--write":

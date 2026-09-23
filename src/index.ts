@@ -3,6 +3,13 @@ import {
   renderHarmonyBasedSchema,
 } from "./converter.js"
 
+export {
+  type ToolsListValidationResult,
+  type ToolValidationResult,
+  type ValidationIssue,
+  validateToolsList,
+} from "./validator.js"
+
 export type JsonSchema = Record<string, unknown>
 
 export interface McpToolDefinition {

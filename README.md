@@ -73,6 +73,14 @@ const output = renderToolsList(toolsList, "mcp__my_connector__")
 console.log(output)
 ```
 
+Validate the same `tools/list` result before connecting it to OpenAI:
+
+```ts
+import { validateToolsList } from "json-schema-to-openai-typescript"
+
+const validation = validateToolsList(toolsList)
+```
+
 Output:
 
 ```ts
@@ -98,9 +106,9 @@ renderOutputSchema(tool.outputSchema)
 
 - Render a complete MCP `tools/list` result into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
 - Render individual MCP input and output schemas using their observed OpenAI behavior.
+- Validate an MCP `tools/list` result against the schema behavior captured from OpenAI.
 - Preserve descriptions, titles, string examples, defaults, and common constraints as comments.
 - Match captured ChatGPT/MCP formatting through byte-for-byte fixture tests.
-- Ship with zero runtime dependencies.
 
 ## CLI
 
@@ -125,6 +133,7 @@ npx json-schema-to-openai-typescript tools-list.json --prefix mcp__my_connector_
 | `renderToolsList(result, connectorPrefix)` | Render an MCP `tools/list` result into OpenAI's connector signatures. |
 | `renderInputSchema(schema)` | Render one MCP `inputSchema`. |
 | `renderOutputSchema(schema)` | Render one MCP `outputSchema` using OpenAI's observed return-type behavior. |
+| `validateToolsList(result)` | Validate every tool schema and report the specific tools that OpenAI would reject or degrade based on the captured behavior. |
 | `JsonSchema` | Type alias for schema input objects. |
 | `McpToolDefinition` | Type for MCP-style tool input. |
 | `ToolsListResult` | Minimal structural type accepted by `renderToolsList`. |

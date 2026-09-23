@@ -82,6 +82,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "ajv": "^8.20.0"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@modelcontextprotocol/client": "^2.0.0",
@@ -90,7 +93,6 @@
     "@modelcontextprotocol/server": "^2.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^22.13.17",
-    "ajv": "^8.20.0",
     "express": "^5.2.1",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3"
