@@ -1,6 +1,6 @@
 {
   "name": "json-schema-to-openai-typescript",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Convert JSON Schema into OpenAI's TypeScript-like schema representation for tool schemas, MCP, and standalone structured schemas.",
   "license": "MIT",
   "author": "Serbyte Development",
