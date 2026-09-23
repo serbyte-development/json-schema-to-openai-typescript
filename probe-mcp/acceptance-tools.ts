@@ -1,4 +1,4 @@
-export type JsonSchema = Record<string, unknown>
+import type { JsonSchema } from "../src/index.js"
 
 export interface AcceptanceTool {
   name: string

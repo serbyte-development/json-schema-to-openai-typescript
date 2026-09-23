@@ -8,9 +8,8 @@ The output-schema matrix uses separate tools for top-level primitive outputs, un
 
 ## Capture notes
 
-- Connector discovery exposes the input schema inside an `args: ...` wrapper. The schema body is the compatibility target; the wrapper is recorded only when it carries extra information.
+- Connector discovery exposes the complete `mcp__<connector>__<tool>(args: ...): Promise<...>;` signature. The full signature is part of the compatibility contract, while normalized input/output bodies make schema-level differences easier to test independently.
 - MCP `outputSchema` is observable in connector discovery as the `Promise<...>` return type. Output rendering is therefore part of the compatibility surface.
-- A historical Shellby capture showed a Zod `.meta(...)` injection causing OpenAI's model-facing schema to collapse to a generic/unknown shape. That observation is documented as evidence, not a general rule about all metadata. The probe includes a tool-level MCP `_meta` case so that behavior can be tested independently.
 
 ### Current observed output behavior
 
@@ -51,15 +50,14 @@ npm run probe:tunnel
 
 Use the resulting HTTPS URL with `/mcp` as the connector URL.
 
-The server uses one `/mcp` endpoint for both the renderer and acceptance probes. `renderer` is the normal/default mode; acceptance modes temporarily replace that tool surface without changing the connector URL.
+The server uses one `/mcp` endpoint for both the renderer and acceptance probes. With no arguments it exposes the normal 76-tool renderer surface. To isolate acceptance cases, restart it with `acceptance` followed by one or more acceptance tool names. The connector URL does not change.
 
-Switch modes with:
+Examples:
 
 ```bash
-npm run probe:acceptance:select -- renderer
-npm run probe:acceptance:select -- safe
-npm run probe:acceptance:select -- ambiguous
-npm run probe:acceptance:select -- tool input_invalid_type_name
+npm run probe:mcp
+npm run probe:mcp -- acceptance input_invalid_type_name
+npm run probe:mcp -- acceptance input_valid_baseline output_valid_baseline
 ```
 
 Generate and verify its local JSON Schema/MCP evidence with:

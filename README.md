@@ -82,7 +82,7 @@ const output = renderOpenAIConnectorTypescript(
       },
     },
   ],
-  { prefix: "mcp__my_connector__" },
+  "mcp__my_connector__",
 )
 ```
 
@@ -100,14 +100,10 @@ query: string,
 Render an array of MCP-style tool definitions from a JSON file:
 
 ```bash
-npx json-schema-to-openai-typescript tools.json
-```
-
-The input array must contain `name`, optional `description`, `inputSchema`, and optional `outputSchema` fields. The CLI emits connector-style signatures. Pass the connector namespace prefix when you want the exact Code Mode naming shape:
-
-```bash
 npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__
 ```
+
+The input array must contain `name`, optional `description`, `inputSchema`, and optional `outputSchema` fields. The CLI emits connector-style signatures and requires the connector namespace prefix used by Code Mode:
 
 Output is written to stdout, so it can be redirected directly:
 
@@ -121,7 +117,7 @@ npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__ > t
 | --- | --- |
 | `renderJsonSchemaAsOpenAITypescript(schema)` | Render one standalone JSON Schema. |
 | `renderJsonSchemaAsOpenAIOutputTypescript(schema)` | Render one MCP `outputSchema` using OpenAI's observed return-type behavior. |
-| `renderOpenAIConnectorTypescript(tools, options)` | Render current connector-style `mcp__<connector>__<tool>(args: ...): Promise<...>;` signatures. |
+| `renderOpenAIConnectorTypescript(tools, connectorPrefix)` | Render current connector-style `mcp__<connector>__<tool>(args: ...): Promise<...>;` signatures. `connectorPrefix` must have the form `mcp__<connector>__`. |
 | `JsonSchema` | Type alias for schema input objects. |
 | `McpToolDefinition` | Type for MCP-style tool input. |
 
@@ -143,12 +139,10 @@ The renderer currently covers the captured OpenAI input-schema behavior for:
 
 The comprehensive connector probe currently matches **76/76 captured input schemas** and **43/43 captured output schemas** byte-for-byte.
 
-Connector-style wrappers can be rendered with an optional namespace prefix:
+Connector-style wrappers require the observed OpenAI connector prefix:
 
 ```ts
-renderOpenAIConnectorTypescript(tools, {
-  prefix: "mcp__my_connector__",
-})
+renderOpenAIConnectorTypescript(tools, "mcp__my_connector__")
 ```
 
 The comprehensive fixture verifies the complete 76-tool signature surface byte-for-byte, including `Promise<unknown>` when no `outputSchema` is present.
@@ -195,5 +189,7 @@ Render the included MCP fixture locally:
 ```bash
 npm run render -- fixtures/connector-discovery/before.json --prefix mcp__test_openai_typescript__
 ```
+
+For a fresh ChatGPT Code Mode capture session, use [`CODE_MODE_CAPTURE_PROMPT.md`](./CODE_MODE_CAPTURE_PROMPT.md) rather than manually copying connector signatures.
 
 Developed & maintained by [Serbyte Development](https://www.serbyte.net/) · [GitHub](https://github.com/Serbyte-Development)

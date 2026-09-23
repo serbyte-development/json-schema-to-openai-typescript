@@ -10,7 +10,7 @@ paths:
 
 The renderer fixture answers what OpenAI transforms accepted schemas into. The acceptance probe answers a different question: which schemas reach OpenAI, which are valid JSON Schema 2020-12, which OpenAI exposes, and whether exposed tools can actually be called.
 
-It is intentionally served as a separate MCP endpoint so malformed or edge-case schemas cannot destabilize the known-good 76-tool renderer fixture.
+The same `/mcp` endpoint serves either the known-good renderer fixture or an explicitly selected acceptance subset. Acceptance probes are selected at server startup so invalid schemas cannot accidentally contaminate the normal 76-tool surface.
 
 ## Evidence layers
 
@@ -47,23 +47,19 @@ The files under `fixtures/acceptance/` are:
 - `normalized.json`: mechanically extracted model-facing signatures;
 - `report.md`: joined local/OpenAI compatibility table.
 
-The OpenAI files do not exist until the connector is connected and captured. `npm run probe:acceptance:verify` still verifies all locally available evidence while that observation is pending.
+`after.md` and `openai-observation.json` aggregate the accepted cases captured across isolated connector refreshes. Invalid cases are recorded separately in `openai-rejections.json`.
 
-## Safe and isolated serving modes
+## Isolated serving
 
-Because OpenAI aborts connector refresh at the first invalid tool schema, `/mcp` defaults to the locally valid/compilable subset. Change the active acceptance surface without changing the connector URL:
+Because OpenAI aborts connector refresh at the first invalid tool schema, the server defaults to the known-good renderer fixture. Restart it with explicit acceptance tool names when probing acceptance behavior:
 
 ```bash
-npm run probe:acceptance:select -- renderer
-npm run probe:acceptance:select -- safe
-npm run probe:acceptance:select -- ambiguous
-npm run probe:acceptance:select -- tool input_invalid_type_name
-npm run probe:acceptance:select -- all
+npm run probe:mcp
+npm run probe:mcp -- acceptance input_invalid_type_name
+npm run probe:mcp -- acceptance input_valid_baseline output_valid_baseline
 ```
 
-`ambiguous` exposes only the five cases where local meta-schema validity does not by itself tell us OpenAI's behavior: empty enum, malformed regex, unresolved input ref, malformed output regex, and unresolved output ref.
-
-The running server reads `fixtures/acceptance/selection.json` for each `tools/list` request. `renderer` is the normal/default mode and exposes the 76-tool renderer fixture at `/mcp`. The other modes temporarily replace that surface with acceptance probes while keeping the same server, URL, and connector.
+The public URL and connector configuration stay unchanged across restarts. Selection is explicit in the server command rather than stored as mutable fixture state.
 
 The first observed OpenAI rejection is `input_invalid_type_name`, reported during connector refresh as `Invalid MCP tool schema for tool 'input_invalid_type_name'`. That rejection is recorded separately from standard JSON Schema validity.
 
@@ -75,4 +71,4 @@ All probe modes use the same connector route:
 /mcp
 ```
 
-In `renderer` mode this route exposes the known-good 76-tool fixture. In an acceptance mode it exposes only the selected acceptance tools. Once the connector is refreshed, Code Mode can mechanically capture all visible tool descriptions, invoke visible acceptance tools, write the observation fixture, and regenerate the final report. No manual signature transcription is required.
+With no acceptance arguments this route exposes the known-good 76-tool fixture. With acceptance names it exposes only those tools. Once the connector is refreshed, Code Mode can mechanically capture all visible tool descriptions, invoke visible acceptance tools, write the observation fixture, and regenerate the final report. No manual signature transcription is required.

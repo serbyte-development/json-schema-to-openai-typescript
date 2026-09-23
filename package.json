@@ -1,7 +1,7 @@
 {
   "name": "json-schema-to-openai-typescript",
   "version": "0.2.0",
-  "description": "Convert JSON Schema into OpenAIs TypeScript-like schema representation for tool schemas, MCP, and standalone structured schemas.",
+  "description": "Convert JSON Schema into OpenAI's TypeScript-like schema representation for tool schemas, MCP, and standalone structured schemas.",
   "license": "MIT",
   "author": "Serbyte Development",
   "repository": {
@@ -34,7 +34,6 @@
     "probe:mcp": "tsx probe-mcp/server.ts",
     "probe:acceptance:local": "tsx probe-mcp/acceptance-local.ts --write",
     "probe:acceptance:local:check": "tsx probe-mcp/acceptance-local.ts --check",
-    "probe:acceptance:select": "tsx probe-mcp/acceptance-select.ts",
     "probe:acceptance:normalize": "tsx probe-mcp/acceptance-normalize.ts --write",
     "probe:acceptance:normalize:check": "tsx probe-mcp/acceptance-normalize.ts --check",
     "probe:acceptance:report": "tsx probe-mcp/acceptance-report.ts --write",
@@ -57,9 +56,10 @@
     "format:check": "biome format .",
     "typecheck": "tsc --noEmit",
     "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
-    "check": "biome check . && npm run probe:capture:verify && npm run probe:acceptance:verify && npm run typecheck && npm test && npm run build",
+    "verify": "biome check . && npm run probe:capture:verify && npm run probe:acceptance:verify && npm run typecheck && npm test",
+    "check": "npm run verify && npm run build",
     "prepack": "npm run build",
-    "prepublishOnly": "npm run check"
+    "prepublishOnly": "npm run verify"
   },
   "keywords": [
     "json-schema-to-typescript",

@@ -2,11 +2,7 @@ import assert from "node:assert/strict"
 import { readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-interface NormalizedTool {
-  name: string
-  input: string
-  output: string
-}
+import type { NormalizedConnectorTool } from "./connector-capture.js"
 
 interface MatrixRow {
   feature: string
@@ -255,7 +251,7 @@ const outputPath = resolve("wiki/pages/schema-support-matrix.md")
 const mode = process.argv[2] ?? "--check"
 const normalized = JSON.parse(
   readFileSync(normalizedPath, "utf8"),
-) as NormalizedTool[]
+) as NormalizedConnectorTool[]
 const names = new Set(normalized.map((tool) => tool.name))
 
 for (const row of rows) {

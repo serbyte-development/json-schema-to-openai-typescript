@@ -5,7 +5,7 @@ import { resolve } from "node:path"
 import {
   normalizeConnectorDiscoveryCapture,
   serializeNormalizedConnectorDiscovery,
-} from "../src/connector-capture.js"
+} from "./connector-capture.js"
 
 const connectorPrefix = "mcp__test_openai_typescript__"
 const rawPath = resolve("fixtures/connector-discovery/after.md")

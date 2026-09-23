@@ -13,17 +13,17 @@ export interface McpToolDefinition {
   annotations?: Record<string, unknown>
 }
 
-export interface OpenAIConnectorRenderOptions {
-  prefix?: string
-}
-
 /** Render MCP tools using OpenAI's observed connector signature shape. */
 export function renderOpenAIConnectorTypescript(
   tools: readonly McpToolDefinition[],
-  options: OpenAIConnectorRenderOptions = {},
+  connectorPrefix: string,
 ): string {
-  const prefix = options.prefix ?? ""
-  return `${tools.map((tool) => renderConnectorTool(tool, prefix)).join("\n")}\n`
+  if (!connectorPrefix.startsWith("mcp__") || !connectorPrefix.endsWith("__")) {
+    throw new Error(
+      `Expected an OpenAI MCP connector prefix like "mcp__my_connector__", received ${JSON.stringify(connectorPrefix)}`,
+    )
+  }
+  return `${tools.map((tool) => renderConnectorTool(tool, connectorPrefix)).join("\n")}\n`
 }
 
 /** Render one JSON Schema as OpenAI TypeScript. */

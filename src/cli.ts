@@ -7,18 +7,22 @@ import {
   renderOpenAIConnectorTypescript,
 } from "./index.js"
 
-const inputPath = process.argv[2]
-const prefixFlagIndex = process.argv.indexOf("--prefix")
-const prefix = prefixFlagIndex === -1 ? "" : process.argv[prefixFlagIndex + 1]
+const [inputPath, prefixFlag, connectorPrefix, ...extraArguments] =
+  process.argv.slice(2)
 
-if (!inputPath || (prefixFlagIndex !== -1 && prefix === undefined)) {
+if (
+  !inputPath ||
+  prefixFlag !== "--prefix" ||
+  !connectorPrefix ||
+  extraArguments.length > 0
+) {
   console.error(
-    "Usage: json-schema-to-openai-typescript <tools.json> [--prefix <prefix>]",
+    "Usage: json-schema-to-openai-typescript <tools.json> --prefix <mcp__connector__>",
   )
   process.exitCode = 1
 } else {
   const tools = JSON.parse(
     await readFile(inputPath, "utf8"),
   ) as McpToolDefinition[]
-  process.stdout.write(renderOpenAIConnectorTypescript(tools, { prefix }))
+  process.stdout.write(renderOpenAIConnectorTypescript(tools, connectorPrefix))
 }

@@ -65,7 +65,6 @@ These cases establish what reaches OpenAI at all. Rejected MCP transport shapes 
 - **Local compile** additionally catches unresolved local references and malformed regular expressions where possible.
 - **visible** means OpenAI exposed the tool in the connector registry.
 - **rejected** means OpenAI explicitly rejected that tool schema during connector refresh.
-- **accepted, capture pending** means connector refresh succeeded with that tool present, but its exact model-facing registry signature has not yet been captured into this repository.
 - **not presented** means that tool was not part of the connector surface used for the captured OpenAI observation.
 - **connector failed** means the acceptance connector could not be ingested as a usable tool surface.
 - **call ok / call failed** records whether Code Mode could invoke the exposed connector tool with an empty argument object. The probe server itself intentionally accepts all calls so failures before the server are evidence about the connector/tool layer.

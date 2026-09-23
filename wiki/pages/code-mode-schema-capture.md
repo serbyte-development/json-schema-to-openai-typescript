@@ -88,6 +88,6 @@ Keep two layers:
 1. **Raw evidence**: exact connector descriptions and exact MCP `tools/list` JSON.
 2. **Normalized compatibility fixtures**: mechanically extracted argument and return schema bodies used for renderer tests.
 
-This separation makes the raw capture auditable while allowing the renderer tests to ignore connector naming and wrapper details that are outside the JSON-Schema projection itself.
+This separation makes the raw capture auditable while allowing schema-body tests to localize transformation differences. A separate exact-signature test still verifies the full connector name, `args:` wrapper, and `Promise<...>` return type.
 
 The normalized fixture lives at `fixtures/connector-discovery/normalized.json`. Each entry contains the tool name plus the exact extracted `input` and `output` schema-body strings. `probe-mcp/normalize-capture.ts` regenerates it from `after.md`, and `npm run probe:normalize:check` verifies that the committed normalized fixture is byte-for-byte current.

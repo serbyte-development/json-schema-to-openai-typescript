@@ -40,6 +40,22 @@
     {
       "name": "output_openapi_nullable",
       "ok": true
+    },
+    {
+      "name": "input_invalid_empty_enum",
+      "ok": true
+    },
+    {
+      "name": "input_unresolved_ref",
+      "ok": true
+    },
+    {
+      "name": "output_invalid_pattern_syntax",
+      "ok": true
+    },
+    {
+      "name": "output_unresolved_ref",
+      "ok": true
     }
   ]
 }

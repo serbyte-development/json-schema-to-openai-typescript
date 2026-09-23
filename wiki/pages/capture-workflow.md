@@ -1,6 +1,7 @@
 ---
 summary: "Reproducible workflow for capturing raw MCP JSON Schema and the corresponding OpenAI connector rendering, then normalizing and verifying the fixtures."
 paths:
+  - CODE_MODE_CAPTURE_PROMPT.md
   - fixtures/connector-discovery/
   - probe-mcp/
 ---
@@ -51,6 +52,8 @@ Connect the resulting HTTPS URL with `/mcp` to ChatGPT. The local endpoint is `h
 This step occurs inside ChatGPT Code Mode. Read the connector tools from `ALL_TOOLS`, preserve each exact `description` string, and transfer those strings directly to `fixtures/connector-discovery/after.md` through the Mac connector.
 
 The schema text should remain an in-memory string throughout the transfer. Do not manually transcribe signatures. The detailed runtime boundary and byte-fidelity rules are documented in `code-mode-schema-capture.md`.
+
+For a fresh ChatGPT session, `CODE_MODE_CAPTURE_PROMPT.md` is the reusable handoff prompt. It describes the required `ALL_TOOLS -> JavaScript strings -> apply_patch` data path for both renderer and acceptance captures.
 
 ## 4. Normalize and regenerate derived evidence
 

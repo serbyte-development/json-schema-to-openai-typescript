@@ -2,11 +2,8 @@ import assert from "node:assert/strict"
 import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-interface ToolDefinition {
-  name: string
-  inputSchema: Record<string, unknown>
-  outputSchema?: Record<string, unknown>
-}
+import type { McpToolDefinition } from "../src/index.js"
+import type { NormalizedConnectorTool } from "./connector-capture.js"
 
 interface SchemaInspection {
   metaSchemaValid: boolean
@@ -17,12 +14,6 @@ interface AcceptanceInspection {
   name: string
   input: SchemaInspection
   output?: SchemaInspection
-}
-
-interface NormalizedTool {
-  name: string
-  input: string
-  output: string
 }
 
 interface CallObservation {
@@ -42,25 +33,18 @@ interface OpenAIRejection {
   error: string
 }
 
-interface OpenAIAcceptance {
-  name: string
-  evidence: string
-}
-
 const beforePath = resolve("fixtures/acceptance/before.json")
 const validityPath = resolve("fixtures/acceptance/local-validity.json")
 const transportPath = resolve("fixtures/acceptance/mcp-transport.json")
 const observationPath = resolve("fixtures/acceptance/openai-observation.json")
-const ambiguousObservationPath = resolve(
-  "fixtures/acceptance/ambiguous-openai-observation.json",
-)
 const rejectionsPath = resolve("fixtures/acceptance/openai-rejections.json")
-const acceptedPath = resolve("fixtures/acceptance/openai-accepted.json")
 const normalizedPath = resolve("fixtures/acceptance/normalized.json")
 const reportPath = resolve("fixtures/acceptance/report.md")
 const mode = process.argv[2] ?? "--check"
 
-const tools = JSON.parse(readFileSync(beforePath, "utf8")) as ToolDefinition[]
+const tools = JSON.parse(
+  readFileSync(beforePath, "utf8"),
+) as McpToolDefinition[]
 const validity = JSON.parse(
   readFileSync(validityPath, "utf8"),
 ) as AcceptanceInspection[]
@@ -77,26 +61,17 @@ const observation = hasObservation
   : undefined
 const normalized =
   observation && !observation.connectorError && existsSync(normalizedPath)
-    ? (JSON.parse(readFileSync(normalizedPath, "utf8")) as NormalizedTool[])
+    ? (JSON.parse(
+        readFileSync(normalizedPath, "utf8"),
+      ) as NormalizedConnectorTool[])
     : []
 const normalizedByName = new Map(normalized.map((item) => [item.name, item]))
 const rejections = existsSync(rejectionsPath)
   ? (JSON.parse(readFileSync(rejectionsPath, "utf8")) as OpenAIRejection[])
   : []
 const rejectionByName = new Map(rejections.map((item) => [item.name, item]))
-const accepted = existsSync(acceptedPath)
-  ? (JSON.parse(readFileSync(acceptedPath, "utf8")) as OpenAIAcceptance[])
-  : []
-const acceptedByName = new Map(accepted.map((item) => [item.name, item]))
-const ambiguousObservation = existsSync(ambiguousObservationPath)
-  ? (JSON.parse(
-      readFileSync(ambiguousObservationPath, "utf8"),
-    ) as OpenAIObservation)
-  : undefined
 const callByName = new Map(
-  [...(observation?.calls ?? []), ...(ambiguousObservation?.calls ?? [])].map(
-    (item) => [item.name, item],
-  ),
+  (observation?.calls ?? []).map((item) => [item.name, item]),
 )
 
 const rows = tools.map((tool) => {
@@ -106,18 +81,15 @@ const rows = tools.map((tool) => {
   const schema = target === "output" ? local.output : local.input
   assert.ok(schema, `Missing ${target} validity for ${tool.name}`)
   const rejection = rejectionByName.get(tool.name)
-  const acceptedByRefresh = acceptedByName.has(tool.name)
   const openai = rejection
     ? "rejected"
     : normalizedByName.has(tool.name)
       ? "visible"
-      : acceptedByRefresh
-        ? "accepted, capture pending"
-        : observation?.connectorError
-          ? "connector failed"
-          : !observation
-            ? "pending"
-            : "not presented"
+      : observation?.connectorError
+        ? "connector failed"
+        : !observation
+          ? "pending"
+          : "not presented"
   const rendered = normalizedByName.get(tool.name)
   const call = callByName.get(tool.name)
   return `| \`${tool.name}\` | ${target} | ${schema.metaSchemaValid ? "valid" : "invalid"} | ${schema.compileStatus} | ${openai} | ${call ? (call.ok ? "call ok" : "call failed") : "not tested"} | ${rendered ? `\`${escapeCell(target === "output" ? rendered.output : rendered.input)}\`` : ""} |`
@@ -149,7 +121,6 @@ ${rows.join("\n")}
 - **Local compile** additionally catches unresolved local references and malformed regular expressions where possible.
 - **visible** means OpenAI exposed the tool in the connector registry.
 - **rejected** means OpenAI explicitly rejected that tool schema during connector refresh.
-- **accepted, capture pending** means connector refresh succeeded with that tool present, but its exact model-facing registry signature has not yet been captured into this repository.
 - **not presented** means that tool was not part of the connector surface used for the captured OpenAI observation.
 - **connector failed** means the acceptance connector could not be ingested as a usable tool surface.
 - **call ok / call failed** records whether Code Mode could invoke the exposed connector tool with an empty argument object. The probe server itself intentionally accepts all calls so failures before the server are evidence about the connector/tool layer.

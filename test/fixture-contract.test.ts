@@ -6,7 +6,7 @@ import test from "node:test"
 import {
   normalizeConnectorDiscoveryCapture,
   serializeNormalizedConnectorDiscovery,
-} from "../src/connector-capture.js"
+} from "../probe-mcp/connector-capture.js"
 import {
   type McpToolDefinition,
   renderJsonSchemaAsOpenAIOutputTypescript,
@@ -134,10 +134,15 @@ test("renders every captured connector signature exactly", () => {
     .join("\n")}\n`
 
   assert.equal(
-    renderOpenAIConnectorTypescript(before, {
-      prefix: "mcp__test_openai_typescript__",
-    }),
+    renderOpenAIConnectorTypescript(before, "mcp__test_openai_typescript__"),
     expectedSignatures,
+  )
+})
+
+test("requires the OpenAI MCP connector prefix shape", () => {
+  assert.throws(
+    () => renderOpenAIConnectorTypescript([], "test_openai_typescript"),
+    /Expected an OpenAI MCP connector prefix/,
   )
 })
 
