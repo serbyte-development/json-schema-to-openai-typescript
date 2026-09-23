@@ -40,9 +40,32 @@ ALL_TOOLS
 
    const after =
      connectorTools.map((tool) => tool.description ?? "").join("\n\n") + "\n"
+
+   const repoDir = "/path/to/json-schema-to-openai-typescript"
+   const fixture = "fixtures/conversion/openai-signatures.md"
+   const patch = [
+     "*** Begin Patch",
+     `*** Delete File: ${fixture}`,
+     `*** Add File: ${fixture}`,
+     ...after
+       .slice(0, -1)
+       .split("\n")
+       .map((line) => `+${line}`),
+     "*** End Patch",
+   ].join("\n")
+
+   const applyPatchTool = ALL_TOOLS.find(
+     (tool) => tool.name.endsWith("__apply_patch") && tool.name.includes("Macbook"),
+   )
+   if (!applyPatchTool) throw new Error("Macbook apply_patch tool not found")
+
+   await tools[applyPatchTool.name]({
+     cwd: repoDir,
+     patch,
+   })
    ```
 
-5. Build the `apply_patch` patch string from `after` in the same Code Mode execution path and call `@[...] Macbook`'s `apply_patch`. The model must not copy the signatures into a handwritten tool call.
+5. Keep the entire capture and patch construction in that Code Mode execution path. The model must not copy the signatures into a handwritten tool call.
 6. For an ingestion capture, invoke each visible ingestion case through its exact Code Mode callable when callability is part of the evidence. Construct the observation JSON programmatically from those results and write it through `apply_patch` as well.
 7. Run the repository's normalization and verification commands after the raw capture is persisted.
 

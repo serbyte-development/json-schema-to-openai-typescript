@@ -2,12 +2,16 @@ import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import test from "node:test"
+import type { ListToolsResult as McpListToolsResult } from "@modelcontextprotocol/client"
 
 import {
   type McpToolDefinition,
+  renderInputSchema,
   renderJsonSchemaAsOpenAIOutputTypescript,
   renderJsonSchemaAsOpenAITypescript,
   renderOpenAIConnectorTypescript,
+  renderOutputSchema,
+  renderToolsList,
 } from "../src/index.js"
 import {
   normalizeConnectorDiscoveryCapture,
@@ -83,7 +87,7 @@ test("matches every captured OpenAI input conversion", () => {
 
   for (const tool of tools) {
     assert.equal(
-      renderJsonSchemaAsOpenAITypescript(tool.inputSchema),
+      renderInputSchema(tool.inputSchema),
       expectedByName.get(tool.name)?.input,
       tool.name,
     )
@@ -104,7 +108,7 @@ test("matches every captured OpenAI output conversion", () => {
   for (const tool of tools) {
     if (!tool.outputSchema) continue
     assert.equal(
-      renderJsonSchemaAsOpenAIOutputTypescript(tool.outputSchema),
+      renderOutputSchema(tool.outputSchema),
       expectedByName.get(tool.name)?.output,
       tool.name,
     )
@@ -128,14 +132,36 @@ test("matches every captured OpenAI connector signature", () => {
     .join("\n")}\n`
 
   assert.equal(
-    renderOpenAIConnectorTypescript(tools, "mcp__test_openai_typescript__"),
+    renderToolsList({ tools }, "mcp__test_openai_typescript__"),
     expectedSignatures,
   )
 })
 
 test("requires the OpenAI MCP connector prefix shape", () => {
   assert.throws(
-    () => renderOpenAIConnectorTypescript([], "test_openai_typescript"),
+    () => renderToolsList({ tools: [] }, "test_openai_typescript"),
     /Expected an OpenAI MCP connector prefix/,
+  )
+})
+
+test("accepts the MCP SDK tools/list result type directly", () => {
+  const render = (result: McpListToolsResult) =>
+    renderToolsList(result, "mcp__test_openai_typescript__")
+  assert.equal(typeof render, "function")
+})
+
+test("keeps the 0.2.0 render names as deprecated aliases", () => {
+  const schema = { type: "object" }
+  assert.equal(
+    renderJsonSchemaAsOpenAITypescript(schema),
+    renderInputSchema(schema),
+  )
+  assert.equal(
+    renderJsonSchemaAsOpenAIOutputTypescript(schema),
+    renderOutputSchema(schema),
+  )
+  assert.equal(
+    renderOpenAIConnectorTypescript([], "mcp__test__"),
+    renderToolsList({ tools: [] }, "mcp__test__"),
   )
 })

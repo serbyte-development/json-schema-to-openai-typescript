@@ -5,8 +5,8 @@ import test from "node:test"
 
 import {
   type McpToolDefinition,
-  renderJsonSchemaAsOpenAIOutputTypescript,
-  renderJsonSchemaAsOpenAITypescript,
+  renderInputSchema,
+  renderOutputSchema,
 } from "../src/index.js"
 
 const mcpToolsPath = resolve("fixtures/ingestion/mcp-tools.json")
@@ -89,13 +89,13 @@ test("matches every captured ingested schema conversion", () => {
     const tool = toolsByName.get(expectedTool.name)
     assert.ok(tool, expectedTool.name)
     assert.equal(
-      renderJsonSchemaAsOpenAITypescript(tool.inputSchema),
+      renderInputSchema(tool.inputSchema),
       expectedTool.input,
       `${expectedTool.name} input`,
     )
     if (tool.outputSchema) {
       assert.equal(
-        renderJsonSchemaAsOpenAIOutputTypescript(tool.outputSchema),
+        renderOutputSchema(tool.outputSchema),
         expectedTool.output,
         `${expectedTool.name} output`,
       )

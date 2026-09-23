@@ -1,10 +1,10 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 
-import { renderJsonSchemaAsOpenAITypescript } from "../src/index.js"
+import { renderInputSchema } from "../src/index.js"
 
 test("converts Harmony baseline schema features", () => {
-  const converted = renderJsonSchemaAsOpenAITypescript({
+  const converted = renderInputSchema({
     type: "object",
     properties: {
       value: {

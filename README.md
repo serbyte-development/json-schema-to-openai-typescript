@@ -62,56 +62,15 @@ Requires Node.js 22 or newer. The package is ESM-only.
 
 ## Quick start
 
-Render a standalone JSON Schema:
+Render the result of MCP `tools/list` directly:
 
 ```ts
-import { renderJsonSchemaAsOpenAITypescript } from "json-schema-to-openai-typescript"
+import { renderToolsList } from "json-schema-to-openai-typescript"
 
-const output = renderJsonSchemaAsOpenAITypescript({
-  type: "object",
-  properties: {
-    query: {
-      type: "string",
-      description: "Search query.",
-      minLength: 1,
-    },
-  },
-  required: ["query"],
-})
+const toolsList = await client.listTools()
+const output = renderToolsList(toolsList, "mcp__my_connector__")
 
 console.log(output)
-```
-
-Output:
-
-```ts
-{
-// Search query.
-query: string, // minLength: 1
-}
-```
-
-Render MCP tool definitions in the current OpenAI connector shape:
-
-```ts
-import { renderOpenAIConnectorTypescript } from "json-schema-to-openai-typescript"
-
-const output = renderOpenAIConnectorTypescript(
-  [
-    {
-      name: "search",
-      description: "Search documents.",
-      inputSchema: {
-        type: "object",
-        properties: {
-          query: { type: "string", description: "Search query." },
-        },
-        required: ["query"],
-      },
-    },
-  ],
-  "mcp__my_connector__",
-)
 ```
 
 Output:
@@ -123,39 +82,54 @@ query: string,
 }): Promise<unknown>;
 ```
 
+Render an individual MCP input or output schema:
+
+```ts
+import {
+  renderInputSchema,
+  renderOutputSchema,
+} from "json-schema-to-openai-typescript"
+
+renderInputSchema(tool.inputSchema)
+renderOutputSchema(tool.outputSchema)
+```
+
 ## Features
 
-- Convert standalone JSON Schema without a tool wrapper.
-- Convert MCP tool definitions into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
+- Render a complete MCP `tools/list` result into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
+- Render individual MCP input and output schemas using their observed OpenAI behavior.
 - Preserve descriptions, titles, string examples, defaults, and common constraints as comments.
 - Match captured ChatGPT/MCP formatting through byte-for-byte fixture tests.
 - Ship with zero runtime dependencies.
 
 ## CLI
 
-Render an array of MCP-style tool definitions from a JSON file:
+Render a captured MCP `tools/list` result from a JSON file:
 
 ```bash
-npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__
+npx json-schema-to-openai-typescript tools-list.json --prefix mcp__my_connector__
 ```
 
-The input array must contain `name`, optional `description`, `inputSchema`, and optional `outputSchema` fields. The CLI emits connector-style signatures and requires the connector namespace prefix used by Code Mode:
+The JSON should contain the `tools` array returned by MCP `tools/list`. For compatibility, a bare tool array is also accepted. The CLI requires the connector namespace prefix used by Code Mode.
 
 Output is written to stdout, so it can be redirected directly:
 
 ```bash
-npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__ > tools.ts
+npx json-schema-to-openai-typescript tools-list.json --prefix mcp__my_connector__ > tools.ts
 ```
 
 ## API
 
 | Export | Purpose |
 | --- | --- |
-| `renderJsonSchemaAsOpenAITypescript(schema)` | Render one standalone JSON Schema. |
-| `renderJsonSchemaAsOpenAIOutputTypescript(schema)` | Render one MCP `outputSchema` using OpenAI's observed return-type behavior. |
-| `renderOpenAIConnectorTypescript(tools, connectorPrefix)` | Render current connector-style `mcp__<connector>__<tool>(args: ...): Promise<...>;` signatures. `connectorPrefix` must have the form `mcp__<connector>__`. |
+| `renderToolsList(result, connectorPrefix)` | Render an MCP `tools/list` result into OpenAI's connector signatures. |
+| `renderInputSchema(schema)` | Render one MCP `inputSchema`. |
+| `renderOutputSchema(schema)` | Render one MCP `outputSchema` using OpenAI's observed return-type behavior. |
 | `JsonSchema` | Type alias for schema input objects. |
 | `McpToolDefinition` | Type for MCP-style tool input. |
+| `ToolsListResult` | Minimal structural type accepted by `renderToolsList`. |
+
+The longer `0.2.0` render function names remain available as deprecated aliases for compatibility.
 
 ## Schema support
 
@@ -171,14 +145,14 @@ The converter currently covers the captured OpenAI input-schema behavior for:
 - titles, descriptions, examples, defaults, and validation constraints as observed comments
 - JSON Schema `integer` preserved as `integer`
 
-`renderJsonSchemaAsOpenAIOutputTypescript` separately preserves the observed MCP output-schema behavior, including detailed object returns and OpenAI's observed `object`, `{ [key: string]: any }`, and `unknown` degradation cases.
+`renderOutputSchema` separately preserves the observed MCP output-schema behavior, including detailed object returns and OpenAI's observed `object`, `{ [key: string]: any }`, and `unknown` degradation cases.
 
 The comprehensive connector probe currently matches **76/76 captured input schemas** and **43/43 captured output schemas** byte-for-byte.
 
 Connector-style wrappers require the observed OpenAI connector prefix:
 
 ```ts
-renderOpenAIConnectorTypescript(tools, "mcp__my_connector__")
+renderToolsList(toolsList, "mcp__my_connector__")
 ```
 
 The comprehensive fixture verifies the complete 76-tool signature surface byte-for-byte, including `Promise<unknown>` when no `outputSchema` is present.
