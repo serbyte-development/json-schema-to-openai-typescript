@@ -3,26 +3,54 @@
 [![CI](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml)
 [![Node.js 22+](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-The Problem:
-OpenAI transforms MCP json schemas into TypeScript-like text before sending them to the model. When parsing your schema fails the model might only see an `unknown` type, with no warning/error message. 
+## The problem
 
-The Solution:
-This package converts JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema representation observed in OpenAI MCP tool definitions across vigorous testing. So you can test your schema before publishing your connector to OpenAI.
+OpenAI converts an MCP tool's JSON Schema into a TypeScript-like signature before the tool definition reaches the model. That conversion can reject, simplify, or lose schema information, leaving the model with `unknown`, `any`, or a generic object type even when your MCP schema looks correct.
 
-[Install](#install) • [Quick start](#quick-start) • [CLI](#cli) • [API](#api) • [Schema support](#schema-support) • [Verify against OpenAI](#verify-against-openai)
+## The solution
 
-Render standalone JSON Schema, MCP `inputSchema`, function/tool schemas, or JSON Schema authored for Structured Outputs. The output is model-facing schema text and can include TypeScript-like tokens such as `integer`.
+**JSON Schema to OpenAI TypeScript** converts your JSON Schema into the TypeScript-like representation OpenAI exposes to the model, so you can inspect what the model will actually receive before shipping your MCP server.
+
+## How it works
+
+This project builds on OpenAI Harmony's published JSON Schema-to-TypeScript conversion logic, then adapts it to match the MCP signatures OpenAI actually exposes to models. It captures raw MCP schemas and exact Code Mode tool signatures, parses those signatures into input/output fixtures, and checks this converter against the observed OpenAI output byte-for-byte.
+
+## Before and after
+
+**MCP JSON Schema**
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "Search query."
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  },
+  "required": ["query"]
+}
+```
+
+**What OpenAI exposes to the model**
+
+```ts
+mcp__my_connector__search(args: {
+// Search query.
+query: string,
+limit?: integer, // minimum: 1, maximum: 100
+}): Promise<unknown>;
+```
 
 > [!NOTE]
 > **OpenAI TypeScript** is project terminology for this representation. This is an independent project and is not an OpenAI product or specification.
 
-## Features
-
-- Convert standalone JSON Schema without a tool wrapper.
-- Convert MCP tool definitions into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
-- Preserve descriptions, titles, string examples, defaults, and common constraints as comments.
-- Match captured ChatGPT/MCP formatting through byte-for-byte fixture tests.
-- Ship with zero runtime dependencies.
+[Install](#install) • [Quick start](#quick-start) • [CLI](#cli) • [API](#api) • [Schema support](#schema-support) • [Verify against OpenAI](#verify-against-openai)
 
 ## Install
 
@@ -94,6 +122,14 @@ mcp__my_connector__search(args: {
 query: string,
 }): Promise<unknown>;
 ```
+
+## Features
+
+- Convert standalone JSON Schema without a tool wrapper.
+- Convert MCP tool definitions into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
+- Preserve descriptions, titles, string examples, defaults, and common constraints as comments.
+- Match captured ChatGPT/MCP formatting through byte-for-byte fixture tests.
+- Ship with zero runtime dependencies.
 
 ## CLI
 
