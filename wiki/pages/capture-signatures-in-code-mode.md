@@ -1,11 +1,11 @@
 ---
-summary: "How OpenAI-side Code Mode can read connector tool metadata and transfer exact rendered schemas into local fixtures without manual transcription."
+summary: "How Code Mode reads OpenAI connector metadata and transfers exact signatures into repository fixtures without manual transcription."
 paths:
-  - fixtures/connector-discovery/
-  - probe-mcp/
+  - fixtures/conversion/
+  - verify-openai/capture/
 ---
 
-# Code Mode Schema Capture
+# Capture Signatures in Code Mode
 
 This project can capture the model-facing connector schema without manually retyping every rendered tool definition.
 
@@ -41,12 +41,12 @@ The reliable path is:
 ```text
 Probe MCP tools/list
     -> raw JSON Schema tool definitions
-    -> fixtures/connector-discovery/before.json
+    -> fixtures/conversion/mcp-tools.json
 
 OpenAI connector registry metadata
     -> ALL_TOOLS
     -> exact tool.description strings
-    -> fixtures/connector-discovery/after.md
+    -> fixtures/conversion/openai-signatures.md
 ```
 
 The OpenAI-side JavaScript can transfer the exact registry strings directly into an `apply_patch` call:
@@ -86,8 +86,8 @@ The current connector wrapper is part of the observed output contract. Captures 
 Keep two layers:
 
 1. **Raw evidence**: exact connector descriptions and exact MCP `tools/list` JSON.
-2. **Normalized compatibility fixtures**: mechanically extracted argument and return schema bodies used for renderer tests.
+2. **Normalized conversion fixtures**: mechanically extracted argument and return schema bodies used for conversion checks.
 
 This separation makes the raw capture auditable while allowing schema-body tests to localize transformation differences. A separate exact-signature test still verifies the full connector name, `args:` wrapper, and `Promise<...>` return type.
 
-The normalized fixture lives at `fixtures/connector-discovery/normalized.json`. Each entry contains the tool name plus the exact extracted `input` and `output` schema-body strings. `probe-mcp/normalize-capture.ts` regenerates it from `after.md`, and `npm run probe:normalize:check` verifies that the committed normalized fixture is byte-for-byte current.
+The normalized fixture lives at `fixtures/conversion/normalized.json`. Each entry contains the tool name plus the exact extracted `input` and `output` schema-body strings. `verify-openai/check-conversion/normalize-signatures.ts` regenerates it from `openai-signatures.md`, and `npm run openai:conversion:normalize:check` verifies that the committed normalized fixture is byte-for-byte current.

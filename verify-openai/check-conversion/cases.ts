@@ -1,10 +1,10 @@
-import type { JsonSchema } from "../src/index.js"
+import type { JsonSchema } from "../../src/index.js"
 
 export interface ObjectJsonSchema extends JsonSchema {
   type: "object"
 }
 
-export interface ProbeTool {
+export interface ConversionCase {
   name: string
   title?: string
   description: string
@@ -19,7 +19,7 @@ export interface ProbeTool {
   }
 }
 
-export const PROBE_TOOLS: ProbeTool[] = [
+export const CONVERSION_CASES: ConversionCase[] = [
   {
     name: "empty_object",
     description: "Probe an empty object input schema.",

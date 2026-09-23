@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "probe-mcp/**/*.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts", "verify-openai/**/*.ts"]
 }

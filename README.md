@@ -4,12 +4,12 @@
 [![Node.js 22+](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
 The Problem:
-OpenAI transforms MCP json schemas into TypeScript-like schema text before sending them to the model. When parsing your schema fails the model might only see a `unknown` type, with no warning/error message. 
+OpenAI transforms MCP json schemas into TypeScript-like text before sending them to the model. When parsing your schema fails the model might only see an `unknown` type, with no warning/error message. 
 
 The Solution:
-This package converts JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema representation observed in OpenAI MCP tool definitions across vigourse testing.
+This package converts JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema representation observed in OpenAI MCP tool definitions across vigorous testing. So you can test your schema before publishing your connector to OpenAI.
 
-[Install](#install) • [Quick start](#quick-start) • [CLI](#cli) • [API](#api) • [Schema support](#schema-support) • [Compatibility](#compatibility)
+[Install](#install) • [Quick start](#quick-start) • [CLI](#cli) • [API](#api) • [Schema support](#schema-support) • [Verify against OpenAI](#verify-against-openai)
 
 Render standalone JSON Schema, MCP `inputSchema`, function/tool schemas, or JSON Schema authored for Structured Outputs. The output is model-facing schema text and can include TypeScript-like tokens such as `integer`.
 
@@ -18,9 +18,9 @@ Render standalone JSON Schema, MCP `inputSchema`, function/tool schemas, or JSON
 
 ## Features
 
-- Render standalone JSON Schema without a tool wrapper.
-- Render MCP tool definitions as OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
-- Render descriptions, titles, string examples, defaults, and common constraints as comments.
+- Convert standalone JSON Schema without a tool wrapper.
+- Convert MCP tool definitions into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
+- Preserve descriptions, titles, string examples, defaults, and common constraints as comments.
 - Match captured ChatGPT/MCP formatting through byte-for-byte fixture tests.
 - Ship with zero runtime dependencies.
 
@@ -123,7 +123,7 @@ npx json-schema-to-openai-typescript tools.json --prefix mcp__my_connector__ > t
 
 ## Schema support
 
-The renderer currently covers the captured OpenAI input-schema behavior for:
+The converter currently covers the captured OpenAI input-schema behavior for:
 
 - nested objects and arrays
 - required and optional properties
@@ -152,17 +152,17 @@ MCP annotations are accepted by the tool type. Protocol-level MCP `_meta` was in
 > [!IMPORTANT]
 > This package produces TypeScript-like schema text, not compilable TypeScript interfaces. Schema constructs outside the supported conversion rules can fall back to `any`.
 
-## Compatibility
+## Verify against OpenAI
 
-The standalone renderer is adapted from [OpenAI Harmony](https://github.com/openai/harmony)'s published JSON Schema-to-TypeScript conversion logic. This project preserves additional formatting observed in ChatGPT/MCP tool schemas, including `integer` spelling and `Array<T>` formatting.
+The converter is adapted from [OpenAI Harmony](https://github.com/openai/harmony)'s published JSON Schema-to-TypeScript conversion logic. This project preserves additional formatting observed in ChatGPT/MCP tool schemas, including `integer` spelling and `Array<T>` formatting.
 
-The connector-discovery contract lives under `fixtures/connector-discovery/`. It contains the 76-tool raw MCP schema capture, the exact OpenAI Code Mode connector rendering captured programmatically from `ALL_TOOLS`, and mechanically normalized input/output schema bodies used by the renderer tests.
+The conversion evidence lives under `fixtures/conversion/`. It contains the 76-tool raw MCP schema capture, the exact OpenAI Code Mode connector signatures captured programmatically from `ALL_TOOLS`, and mechanically normalized input/output schema bodies used to check the converter.
 
-The generated support matrix is maintained at `wiki/pages/schema-support-matrix.md`, and the reproducible capture procedure is documented at `wiki/pages/capture-workflow.md`.
+The generated support matrix is maintained at `wiki/pages/schema-support-matrix.md`, and the reproducible capture procedure is documented at `wiki/pages/capture-openai-signatures.md`.
 
-Development also includes a separate acceptance probe that distinguishes MCP transport rejection, JSON Schema 2020-12 validity, reference/regex compilation, OpenAI connector visibility, model-facing transformation, and tool callability. See `wiki/pages/acceptance-probe.md`.
+The ingestion checks distinguish MCP transport rejection, JSON Schema 2020-12 validity, reference/regex compilation, OpenAI connector visibility, model-facing transformation, and tool callability. See `wiki/pages/check-openai-ingestion.md`.
 
-Observed acceptance boundaries include:
+Observed ingestion boundaries include:
 
 - MCP tool `inputSchema` must have root `type: "object"`; string, array, missing-type, and object/null-union roots are rejected by the official MCP client before OpenAI.
 - Clearly invalid nested schema shapes are rejected by OpenAI with `Invalid MCP tool schema for tool ...`.
@@ -173,7 +173,7 @@ Observed acceptance boundaries include:
 - A malformed regex in an input `pattern` is rejected, while the analogous malformed output `pattern` is accepted and preserved as a comment.
 - An unresolved output `$ref` is accepted and degrades the output to `{ [key: string]: any }`.
 
-The captured acceptance cases are regression-tested byte-for-byte alongside the main 76-tool renderer fixture.
+The captured ingestion cases are regression-tested byte-for-byte alongside the main 76-tool conversion fixture.
 
 ## Development
 
@@ -187,9 +187,9 @@ npm run check
 Render the included MCP fixture locally:
 
 ```bash
-npm run render -- fixtures/connector-discovery/before.json --prefix mcp__test_openai_typescript__
+npm run convert -- fixtures/conversion/mcp-tools.json --prefix mcp__test_openai_typescript__
 ```
 
-For a fresh ChatGPT Code Mode capture session, use [`CODE_MODE_CAPTURE_PROMPT.md`](./CODE_MODE_CAPTURE_PROMPT.md) rather than manually copying connector signatures.
+For a fresh ChatGPT Code Mode capture session, use [`verify-openai/capture/code-mode-prompt.md`](./verify-openai/capture/code-mode-prompt.md) rather than manually copying connector signatures.
 
 Developed & maintained by [Serbyte Development](https://www.serbyte.net/) · [GitHub](https://github.com/Serbyte-Development)

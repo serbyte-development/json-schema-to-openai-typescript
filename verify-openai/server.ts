@@ -3,9 +3,9 @@ import { createServer } from "node:http"
 import { createMcpExpressApp } from "@modelcontextprotocol/express"
 import { toNodeHandler } from "@modelcontextprotocol/node"
 import { createMcpHandler } from "@modelcontextprotocol/server"
-import { ACCEPTANCE_TOOLS } from "./acceptance-tools.js"
-import { createProbeMcpServer } from "./mcp-probe.js"
-import { PROBE_TOOLS } from "./tools.js"
+import { CONVERSION_CASES } from "./check-conversion/cases.js"
+import { INGESTION_CASES } from "./check-ingestion/cases.js"
+import { createMcpServer } from "./mcp.js"
 
 const host = process.env.HOST ?? "127.0.0.1"
 const port = Number(process.env.PORT ?? 3210)
@@ -13,28 +13,28 @@ const port = Number(process.env.PORT ?? 3210)
 const requested = process.argv.slice(2)
 const selection = (() => {
   if (requested.length === 0) {
-    return { mode: "renderer" as const, tools: PROBE_TOOLS }
+    return { mode: "conversion" as const, tools: CONVERSION_CASES }
   }
-  if (requested[0] !== "acceptance" || requested.length === 1) {
+  if (requested[0] !== "ingestion" || requested.length === 1) {
     throw new Error(
-      "Usage: npm run probe:mcp [-- acceptance <tool-name> [tool-name...]]",
+      "Usage: npm run openai:serve [-- ingestion <case-name> [case-name...]]",
     )
   }
 
-  const toolsByName = new Map(ACCEPTANCE_TOOLS.map((tool) => [tool.name, tool]))
+  const toolsByName = new Map(INGESTION_CASES.map((tool) => [tool.name, tool]))
   const names = requested.slice(1)
   const tools = names.map((name) => {
     const tool = toolsByName.get(name)
-    if (!tool) throw new Error(`Unknown acceptance tool: ${name}`)
+    if (!tool) throw new Error(`Unknown ingestion case: ${name}`)
     return tool
   })
-  return { mode: "acceptance" as const, tools, names }
+  return { mode: "ingestion" as const, tools, names }
 })()
 
 const app = createMcpExpressApp({ host: "0.0.0.0", jsonLimit: "2mb" })
 const reportError = (error: Error) => console.error("MCP error:", error)
 const mcpHandler = createMcpHandler(
-  () => createProbeMcpServer("openai-json-schema-probe", selection.tools),
+  () => createMcpServer("openai-json-schema-verification", selection.tools),
   {
     legacy: "stateless",
     onerror: reportError,
@@ -47,9 +47,9 @@ app.get("/healthz", (_request, response) => {
     ok: true,
     mode: selection.mode,
     activeTools: selection.tools.length,
-    rendererTools: PROBE_TOOLS.length,
-    acceptanceTools: ACCEPTANCE_TOOLS.length,
-    ...(selection.mode === "acceptance" ? { toolNames: selection.names } : {}),
+    conversionCases: CONVERSION_CASES.length,
+    ingestionCases: INGESTION_CASES.length,
+    ...(selection.mode === "ingestion" ? { caseNames: selection.names } : {}),
   })
 })
 
@@ -59,7 +59,7 @@ app.all("/mcp", async (request, response) => {
 
 const httpServer = createServer(app)
 httpServer.listen(port, host, () => {
-  console.log(`Schema probe MCP listening on http://${host}:${port}/mcp`)
+  console.log(`OpenAI verification MCP listening on http://${host}:${port}/mcp`)
   console.log(`Mode: ${selection.mode}`)
   console.log(`Active tools: ${selection.tools.length}`)
 })

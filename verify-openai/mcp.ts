@@ -8,23 +8,23 @@ import { createMcpExpressApp } from "@modelcontextprotocol/express"
 import { toNodeHandler } from "@modelcontextprotocol/node"
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server"
 
-const PROBE_VERSION = "0.2.0"
+const MCP_VERSION = "0.2.0"
 
-export function createProbeMcpServer(
+export function createMcpServer(
   name: string,
   tools: readonly unknown[],
 ): McpServer {
   const server = new McpServer(
-    { name, version: PROBE_VERSION },
+    { name, version: MCP_VERSION },
     {
       instructions:
-        "Schema compatibility probe. Tools are inert and exist to expose JSON Schema shapes for model-facing rendering tests.",
+        "Exposes JSON Schema cases for verifying OpenAI conversion and ingestion behavior. Tools are inert.",
     },
   )
 
   server.server.registerCapabilities({ tools: {} })
   server.server.setRequestHandler("tools/list", async () => ({
-    // Raw-schema probes intentionally include shapes outside the SDK's
+    // Raw-schema cases intentionally include shapes outside the SDK's
     // compile-time schema type while preserving the MCP wire representation.
     tools: [...tools] as never,
   }))
@@ -49,7 +49,7 @@ export async function listToolsThroughOfficialClient(
   name: string,
 ) {
   const app = createMcpExpressApp({ host: "127.0.0.1" })
-  const handler = createMcpHandler(() => createProbeMcpServer(name, tools), {
+  const handler = createMcpHandler(() => createMcpServer(name, tools), {
     legacy: "stateless",
   })
   const nodeHandler = toNodeHandler(handler)
@@ -63,11 +63,11 @@ export async function listToolsThroughOfficialClient(
   )
   const address = httpServer.address()
   if (!address || typeof address === "string") {
-    throw new Error("Probe server did not bind to TCP")
+    throw new Error("Verification server did not bind to TCP")
   }
 
   const client = new Client(
-    { name: `${name}-client`, version: PROBE_VERSION },
+    { name: `${name}-client`, version: MCP_VERSION },
     { versionNegotiation: { mode: "auto" } },
   )
 

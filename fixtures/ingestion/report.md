@@ -1,4 +1,4 @@
-# OpenAI JSON Schema Acceptance Report
+# OpenAI JSON Schema Ingestion Report
 
 This report separates local JSON Schema 2020-12 validity from observed OpenAI connector behavior. A schema can be meta-schema-valid yet unresolved or uncompilable, and OpenAI may accept, omit, degrade, or reject it independently.
 
@@ -6,7 +6,7 @@ OpenAI observation: captured with prefix `mcp__test_openai_typescript__`
 
 ## MCP transport boundary
 
-| Probe | Official MCP client |
+| Case | Official MCP client |
 | --- | --- |
 | `transport_valid_object_input` | accepted |
 | `transport_string_root_input` | rejected |
@@ -14,11 +14,11 @@ OpenAI observation: captured with prefix `mcp__test_openai_typescript__`
 | `transport_missing_root_type` | rejected |
 | `transport_union_root_type` | rejected |
 
-These cases establish what reaches OpenAI at all. Rejected MCP transport shapes are not included in the OpenAI acceptance connector because one invalid `tools/list` result can invalidate the entire connector response.
+These cases establish what reaches OpenAI at all. Rejected MCP transport shapes are not included in an OpenAI ingestion capture because one invalid `tools/list` result can invalidate the entire connector response.
 
 ## JSON Schema and OpenAI boundary
 
-| Probe | Target | 2020-12 meta-schema | Local compile | OpenAI registry | Callability | Observed rendering |
+| Case | Target | 2020-12 meta-schema | Local compile | OpenAI registry | Callability | Observed rendering |
 | --- | --- | --- | --- | --- | --- | --- |
 | `input_valid_baseline` | input | valid | ok | visible | call ok | `{ value?: string }` |
 | `input_unknown_keyword` | input | valid | ok | visible | call ok | `{ value?: string }` |
@@ -66,5 +66,5 @@ These cases establish what reaches OpenAI at all. Rejected MCP transport shapes 
 - **visible** means OpenAI exposed the tool in the connector registry.
 - **rejected** means OpenAI explicitly rejected that tool schema during connector refresh.
 - **not presented** means that tool was not part of the connector surface used for the captured OpenAI observation.
-- **connector failed** means the acceptance connector could not be ingested as a usable tool surface.
-- **call ok / call failed** records whether Code Mode could invoke the exposed connector tool with an empty argument object. The probe server itself intentionally accepts all calls so failures before the server are evidence about the connector/tool layer.
+- **connector failed** means the selected ingestion cases could not be ingested as a usable tool surface.
+- **call ok / call failed** records whether Code Mode could invoke the exposed connector tool with an empty argument object. The verification server itself intentionally accepts all calls so failures before the server are evidence about the connector/tool layer.

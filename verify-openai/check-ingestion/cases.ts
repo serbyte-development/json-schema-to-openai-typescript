@@ -1,13 +1,13 @@
-import type { JsonSchema } from "../src/index.js"
+import type { JsonSchema } from "../../src/index.js"
 
-export interface AcceptanceTool {
+export interface IngestionCase {
   name: string
   description: string
   inputSchema: JsonSchema
   outputSchema?: JsonSchema
 }
 
-export interface TransportProbe {
+export interface TransportCase {
   name: string
   description: string
   tool: Record<string, unknown>
@@ -15,7 +15,7 @@ export interface TransportProbe {
 
 const EMPTY_INPUT: JsonSchema = { type: "object", properties: {} }
 
-export const ACCEPTANCE_TOOLS: AcceptanceTool[] = [
+export const INGESTION_CASES: IngestionCase[] = [
   {
     name: "input_valid_baseline",
     description: "Acceptance probe: ordinary valid object input schema.",
@@ -353,7 +353,7 @@ export const ACCEPTANCE_TOOLS: AcceptanceTool[] = [
   },
 ]
 
-export const MCP_TRANSPORT_PROBES: TransportProbe[] = [
+export const MCP_TRANSPORT_CASES: TransportCase[] = [
   {
     name: "transport_valid_object_input",
     description: "MCP transport baseline with type object inputSchema.",

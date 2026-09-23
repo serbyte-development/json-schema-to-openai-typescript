@@ -2,19 +2,19 @@ import assert from "node:assert/strict"
 import { readFileSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 
-import { listToolsThroughOfficialClient } from "./mcp-probe.js"
-import { PROBE_TOOLS } from "./tools.js"
+import { listToolsThroughOfficialClient } from "../mcp.js"
+import { CONVERSION_CASES } from "./cases.js"
 
-const fixturePath = resolve("fixtures/connector-discovery/before.json")
+const fixturePath = resolve("fixtures/conversion/mcp-tools.json")
 const mode = process.argv[2] ?? "--stdout"
 
 const tools = await listToolsThroughOfficialClient(
-  PROBE_TOOLS,
-  "openai-json-schema-probe-verify",
+  CONVERSION_CASES,
+  "openai-json-schema-conversion-capture",
 )
-if (tools.length !== PROBE_TOOLS.length) {
+if (tools.length !== CONVERSION_CASES.length) {
   throw new Error(
-    `Expected ${PROBE_TOOLS.length} tools, received ${tools.length}`,
+    `Expected ${CONVERSION_CASES.length} tools, received ${tools.length}`,
   )
 }
 

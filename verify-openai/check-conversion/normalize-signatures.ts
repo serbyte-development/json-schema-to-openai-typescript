@@ -5,11 +5,11 @@ import { resolve } from "node:path"
 import {
   normalizeConnectorDiscoveryCapture,
   serializeNormalizedConnectorDiscovery,
-} from "./connector-capture.js"
+} from "../capture/parse-signatures.js"
 
 const connectorPrefix = "mcp__test_openai_typescript__"
-const rawPath = resolve("fixtures/connector-discovery/after.md")
-const normalizedPath = resolve("fixtures/connector-discovery/normalized.json")
+const rawPath = resolve("fixtures/conversion/openai-signatures.md")
+const normalizedPath = resolve("fixtures/conversion/normalized.json")
 const mode = process.argv[2] ?? "--check"
 
 const normalized = serializeNormalizedConnectorDiscovery(

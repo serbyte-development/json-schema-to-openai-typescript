@@ -4,9 +4,9 @@ import { resolve } from "node:path"
 
 import { Ajv2020, type ErrorObject } from "ajv/dist/2020.js"
 
-import type { JsonSchema } from "../src/index.js"
-import { ACCEPTANCE_TOOLS, MCP_TRANSPORT_PROBES } from "./acceptance-tools.js"
-import { listToolsThroughOfficialClient } from "./mcp-probe.js"
+import type { JsonSchema } from "../../src/index.js"
+import { listToolsThroughOfficialClient } from "../mcp.js"
+import { INGESTION_CASES, MCP_TRANSPORT_CASES } from "./cases.js"
 
 interface SchemaInspection {
   metaSchemaValid: boolean
@@ -20,7 +20,7 @@ interface SchemaInspection {
   compileError?: string
 }
 
-interface AcceptanceInspection {
+interface IngestionInspection {
   name: string
   input: SchemaInspection
   output?: SchemaInspection
@@ -32,23 +32,23 @@ interface TransportInspection {
   error?: string
 }
 
-const beforePath = resolve("fixtures/acceptance/before.json")
-const validityPath = resolve("fixtures/acceptance/local-validity.json")
-const transportPath = resolve("fixtures/acceptance/mcp-transport.json")
+const beforePath = resolve("fixtures/ingestion/mcp-tools.json")
+const validityPath = resolve("fixtures/ingestion/json-schema-validity.json")
+const transportPath = resolve("fixtures/ingestion/mcp-transport.json")
 const mode = process.argv[2] ?? "--check"
 
-async function inspectTransportProbe(
-  probe: (typeof MCP_TRANSPORT_PROBES)[number],
+async function inspectTransportCase(
+  testCase: (typeof MCP_TRANSPORT_CASES)[number],
 ): Promise<TransportInspection> {
   try {
     await listToolsThroughOfficialClient(
-      [probe.tool],
-      "openai-json-schema-transport-probe",
+      [testCase.tool],
+      "openai-json-schema-transport-check",
     )
-    return { name: probe.name, acceptedByOfficialClient: true }
+    return { name: testCase.name, acceptedByOfficialClient: true }
   } catch (error) {
     return {
-      name: probe.name,
+      name: testCase.name,
       acceptedByOfficialClient: false,
       error: error instanceof Error ? error.message : String(error),
     }
@@ -93,13 +93,13 @@ function inspectSchema(schema: JsonSchema): SchemaInspection {
 }
 
 const tools = await listToolsThroughOfficialClient(
-  ACCEPTANCE_TOOLS,
-  "openai-json-schema-acceptance-local",
+  INGESTION_CASES,
+  "openai-json-schema-ingestion-check",
 )
-assert.equal(tools.length, ACCEPTANCE_TOOLS.length)
+assert.equal(tools.length, INGESTION_CASES.length)
 
 const before = `${JSON.stringify(tools, null, 2)}\n`
-const inspections: AcceptanceInspection[] = tools.map((tool) => ({
+const inspections: IngestionInspection[] = tools.map((tool) => ({
   name: tool.name,
   input: inspectSchema(tool.inputSchema as JsonSchema),
   ...(tool.outputSchema
@@ -108,7 +108,7 @@ const inspections: AcceptanceInspection[] = tools.map((tool) => ({
 }))
 const validity = `${JSON.stringify(inspections, null, 2)}\n`
 const transport = `${JSON.stringify(
-  await Promise.all(MCP_TRANSPORT_PROBES.map(inspectTransportProbe)),
+  await Promise.all(MCP_TRANSPORT_CASES.map(inspectTransportCase)),
   null,
   2,
 )}\n`

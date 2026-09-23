@@ -1,7 +1,7 @@
 import {
   renderHarmonyBasedOutputSchema,
   renderHarmonyBasedSchema,
-} from "./harmony-schema.js"
+} from "./converter.js"
 
 export type JsonSchema = Record<string, unknown>
 

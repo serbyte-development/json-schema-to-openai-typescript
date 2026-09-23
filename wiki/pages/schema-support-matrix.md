@@ -1,16 +1,16 @@
 ---
-summary: "Fixture-backed support matrix for observed OpenAI JSON Schema input and MCP output-schema rendering behavior."
+summary: "Fixture-backed support matrix for observed OpenAI JSON Schema input and MCP output-schema conversion behavior."
 paths:
-  - fixtures/connector-discovery/
-  - probe-mcp/tools.ts
-  - src/harmony-schema.ts
+  - fixtures/conversion/
+  - verify-openai/check-conversion/cases.ts
+  - src/converter.ts
 ---
 
 # Schema Support Matrix
 
-This table is generated from the connector probe manifest and verified against `fixtures/connector-discovery/normalized.json`. The categories describe observed OpenAI behavior, not general JSON Schema semantics.
+This table is generated from the conversion cases and verified against `fixtures/conversion/normalized.json`. The categories describe observed OpenAI behavior, not general JSON Schema semantics.
 
-| Feature | Input behavior | Output behavior | Evidence probes |
+| Feature | Input behavior | Output behavior | Evidence cases |
 | --- | --- | --- | --- |
 | Empty object | structural | structural | `empty_object`, `output_empty_object` |
 | Primitive top-level types | structural | degraded map | `primitive_types`, `output_string`, `output_number`, `output_integer`, `output_boolean`, `output_null` |
@@ -26,7 +26,7 @@ This table is generated from the connector probe manifest and verified against `
 | Arrays | structural | degraded map at top level | `simple_arrays`, `output_array` |
 | Array size constraints | constraint comment | degraded map at top level | `array_constraints`, `output_array_constraints` |
 | Tuples / prefixItems | structural | degraded map at top level | `tuple_arrays`, `output_closed_tuple`, `output_open_tuple` |
-| contains / minContains / maxContains | ignored | not independently probed | `array_contains` |
+| contains / minContains / maxContains | ignored | not independently checked | `array_contains` |
 | Required / optional object properties | structural | structural | `object_required_optional`, `output_object_required_optional` |
 | additionalProperties | structural | structural | `additional_properties`, `output_additional_properties` |
 | patternProperties | degraded object | constraint comment + degraded object | `pattern_properties`, `output_pattern_properties` |
@@ -54,9 +54,9 @@ This table is generated from the connector probe manifest and verified against `
 
 - **structural**: the schema feature changes the rendered TypeScript-like structure.
 - **constraint comment**: the feature is preserved primarily as a comment rather than a TypeScript-like structural type.
-- **ignored**: the probe shows no visible model-facing representation for the keyword itself.
+- **ignored**: the case shows no visible model-facing representation for the keyword itself.
 - **degraded object**: OpenAI emits `object` instead of preserving the detailed top-level schema.
 - **degraded map**: OpenAI emits `{ [key: string]: any }` for the top-level output.
 - **degraded unknown**: OpenAI emits `unknown` for the output.
 
-The exact bytes for every probe remain authoritative. See `normalized.json` when a row combines multiple behaviors or needs finer detail.
+The exact bytes for every case remain authoritative. See `normalized.json` when a row combines multiple behaviors or needs finer detail.
