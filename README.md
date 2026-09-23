@@ -1,40 +1,14 @@
 # JSON Schema to OpenAI TypeScript
 
-Convert JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema syntax used for OpenAI tool definitions.
+[![CI](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml/badge.svg)](https://github.com/Serbyte-Development/json-schema-to-openai-typescript/actions/workflows/ci.yml)
+[![Node.js 22+](https://img.shields.io/badge/node-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-Render standalone JSON Schema, MCP `inputSchema`, function/tool schemas, or JSON Schema authored for Structured Outputs. Descriptions become comments, and schema structure becomes the corresponding TypeScript-like representation.
+Convert JSON Schema into **OpenAI TypeScript**, the TypeScript-like schema representation observed in OpenAI tool definitions.
 
-## Before and after
+Use it to render standalone JSON Schema, MCP `inputSchema`, function/tool schemas, or JSON Schema authored for Structured Outputs. The package has zero runtime dependencies.
 
-Input JSON Schema:
-
-```json
-{
-  "name": "search",
-  "description": "Search documents.",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "query": {
-        "type": "string",
-        "description": "Search query.",
-        "minLength": 1
-      }
-    },
-    "required": ["query"]
-  }
-}
-```
-
-Observed OpenAI TypeScript tool definition:
-
-```ts
-// Search documents.
-type search = (_: {
-// Search query.
-query: string, // minLength: 1
-}) => any;
-```
+> [!NOTE]
+> **OpenAI TypeScript** is project terminology for this model-facing representation. It is not ordinary TypeScript or an official OpenAI product or specification name.
 
 ## Install
 
@@ -44,52 +18,129 @@ npm install json-schema-to-openai-typescript
 
 Requires Node.js 22 or newer.
 
+## Quick start
+
+Render a standalone JSON Schema:
+
+```ts
+import { renderJsonSchemaAsOpenAITypescript } from "json-schema-to-openai-typescript"
+
+const output = renderJsonSchemaAsOpenAITypescript({
+  type: "object",
+  properties: {
+    query: {
+      type: "string",
+      description: "Search query.",
+      minLength: 1,
+    },
+  },
+  required: ["query"],
+})
+
+console.log(output)
+```
+
+Output:
+
+```ts
+{
+// Search query.
+query: string, // minLength: 1
+}
+```
+
+Render MCP-style tool definitions:
+
+```ts
+import { renderOpenAITypescript } from "json-schema-to-openai-typescript"
+
+const output = renderOpenAITypescript([
+  {
+    name: "search",
+    description: "Search documents.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search query." },
+      },
+      required: ["query"],
+    },
+  },
+])
+```
+
+Output:
+
+```ts
+// Search documents.
+type search = (_: {
+// Search query.
+query: string,
+}) => any;
+```
+
 ## CLI
+
+Render an array of MCP-style tool definitions from a JSON file:
 
 ```bash
 npx json-schema-to-openai-typescript tools.json
 ```
 
-The input is an array of MCP-style tool definitions containing `name`, optional `description`, and `inputSchema`.
+The input array must contain `name`, optional `description`, and `inputSchema` fields. Output is written to stdout, so it can be redirected directly:
 
-## Library
-
-```ts
-import {
-  renderJsonSchemaAsOpenAITypescript,
-  renderOpenAITypescript,
-} from "json-schema-to-openai-typescript"
-
-const schemaOutput = renderJsonSchemaAsOpenAITypescript(schema)
-const toolsOutput = renderOpenAITypescript(tools)
+```bash
+npx json-schema-to-openai-typescript tools.json > tools.ts
 ```
 
-`renderJsonSchemaAsOpenAITypescript` accepts a standalone JSON Schema. `renderOpenAITypescript` adds the tool declaration wrapper for MCP-style tool definitions.
+## API
+
+| Export | Purpose |
+| --- | --- |
+| `renderJsonSchemaAsOpenAITypescript(schema)` | Render one standalone JSON Schema. |
+| `renderOpenAITypescript(tools)` | Render MCP-style tool definitions with `type <name> = ...` wrappers. |
+| `JsonSchema` | Type alias for schema input objects. |
+| `McpToolDefinition` | Type for MCP-style tool input. |
 
 ## Schema support
 
-The renderer supports nested objects and arrays, required and optional properties, string enums, `oneOf`, nullable schemas, `type` unions, titles, examples, defaults, descriptions, and common validation constraints.
+The renderer currently covers:
 
-That also makes it useful for inspecting JSON Schema authored for Structured Outputs, as long as the schema uses supported keywords.
+- nested objects and arrays
+- required and optional properties
+- string enums
+- `oneOf`, nullable schemas, and `type` unions
+- titles, descriptions, and string examples as comments
+- defaults and common numeric, string, and array constraints
+- JSON Schema `integer` preserved as `integer`
 
-For local development:
+MCP annotations are accepted by the tool type but are not emitted in the observed output format.
+
+> [!IMPORTANT]
+> This package produces TypeScript-like schema text, not compilable TypeScript interfaces. Schema constructs outside the supported conversion rules can fall back to `any`.
+
+## Compatibility
+
+The standalone renderer is adapted from OpenAI Harmony's published JSON Schema-to-TypeScript conversion logic. This project preserves additional formatting observed in ChatGPT/MCP tool schemas, including `integer` spelling and `Array<T>` formatting.
+
+The captured compatibility fixture is checked byte-for-byte:
+
+- [`fixtures/before.json`](./fixtures/before.json) contains the MCP tool definitions.
+- [`fixtures/after.ts`](./fixtures/after.ts) contains the matching observed OpenAI TypeScript representation.
+
+## Development
+
+Install dependencies and run all project checks:
+
+```bash
+npm ci
+npm run check
+```
+
+Render the included MCP fixture locally:
 
 ```bash
 npm run render -- fixtures/before.json
 ```
-
-## Verify
-
-```bash
-npm run check
-```
-
-The golden test requires the renderer output to equal `fixtures/after.ts` byte-for-byte.
-
-## Compatibility
-
-This outputs TypeScript-like schema syntax, not compilable TypeScript interfaces.
-
-The renderer starts from OpenAI Harmony's JSON Schema-to-TypeScript conversion logic. MCP/tool rendering adds formatting preserved from captured ChatGPT tool schemas.
 
 Developed & maintained by [Serbyte Development](https://www.serbyte.net/) · [GitHub](https://github.com/Serbyte-Development)
