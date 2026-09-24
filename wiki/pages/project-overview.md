@@ -18,6 +18,8 @@ The standalone JSON Schema converter is the core primitive. Schemas may come fro
 
 OpenAI Harmony's JSON Schema-to-TypeScript renderer is the implementation baseline. Start from Harmony's published conversion rules, then preserve or add ChatGPT/MCP-specific behavior where repository fixtures or new captures provide direct evidence.
 
+For the current synthesized model of the complete MCP `tools/list` to Code Mode representation, including tool-level descriptions, input/output differences, and degradation modes, read [Observed OpenAI Schema Rendering](./observed-openai-schema-rendering.md).
+
 ## Global invariants
 
 - Output fidelity is measured against current Code Mode connector rendering, including the `mcp__<connector>__<tool>(args: ...): Promise<...>;` wrapper, whitespace, comments, type spelling, ordering, and constraint placement.

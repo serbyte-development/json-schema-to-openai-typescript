@@ -6,4 +6,5 @@
 - [Capture OpenAI Signatures](./pages/capture-openai-signatures.md) — How to capture OpenAI's exact MCP signatures and regenerate the derived conversion evidence without manual transcription.
 - [Capture Signatures in Code Mode](./pages/capture-signatures-in-code-mode.md) — How Code Mode reads OpenAI connector metadata and transfers exact signatures into repository fixtures without manual transcription.
 - [Check OpenAI Ingestion](./pages/check-openai-ingestion.md) — How ingestion checks determine which JSON Schema shapes make it through MCP and OpenAI, and what happens when they do.
+- [Observed OpenAI Schema Rendering](./pages/observed-openai-schema-rendering.md) — Observed end-to-end behavior for how OpenAI turns MCP tools/list schemas and metadata into the model-facing Code Mode tool descriptions.
 - [Schema Support Matrix](./pages/schema-support-matrix.md) — Fixture-backed support matrix for observed OpenAI JSON Schema input and MCP output-schema conversion behavior.

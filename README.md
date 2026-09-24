@@ -148,6 +148,8 @@ The longer `0.2.0` render function names remain available as deprecated aliases 
 
 ## Schema support
 
+For a consolidated explanation of the full `tools/list` → model-facing transformation, including tool descriptions, input/output differences, degradation modes, and observed ingestion boundaries, see **[Observed OpenAI Schema Rendering](./wiki/pages/observed-openai-schema-rendering.md)**.
+
 The converter currently covers the captured OpenAI input-schema behavior for:
 
 - nested objects and arrays
