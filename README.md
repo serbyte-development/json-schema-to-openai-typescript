@@ -83,12 +83,18 @@ const validation = validateToolsList(toolsList)
 
 Output:
 
+````text
+Search the connector.
+
 ```ts
 mcp__my_connector__search(args: {
 // Search query.
 query: string,
 }): Promise<unknown>;
 ```
+````
+
+`renderToolsList` returns each tool's description followed by OpenAI's fenced TypeScript signature, matching the captured Code Mode `ALL_TOOLS` description.
 
 Render an individual MCP input or output schema:
 
@@ -104,7 +110,7 @@ renderOutputSchema(tool.outputSchema)
 
 ## Features
 
-- Render a complete MCP `tools/list` result into OpenAI connector signatures: `mcp__<connector>__<tool>(args: ...): Promise<...>;`.
+- Render a complete MCP `tools/list` result into OpenAI connector descriptions, including tool prose and the fenced `mcp__<connector>__<tool>(args: ...): Promise<...>;` signature.
 - Render individual MCP input and output schemas using their observed OpenAI behavior.
 - Validate an MCP `tools/list` result against the schema behavior captured from OpenAI.
 - Preserve descriptions, titles, string examples, defaults, and common constraints as comments.
@@ -123,14 +129,14 @@ The JSON should contain the `tools` array returned by MCP `tools/list`. For comp
 Output is written to stdout, so it can be redirected directly:
 
 ```bash
-npx json-schema-to-openai-typescript tools-list.json --prefix mcp__my_connector__ > tools.ts
+npx json-schema-to-openai-typescript tools-list.json --prefix mcp__my_connector__ > tools.md
 ```
 
 ## API
 
 | Export | Purpose |
 | --- | --- |
-| `renderToolsList(result, connectorPrefix)` | Render an MCP `tools/list` result into OpenAI's connector signatures. |
+| `renderToolsList(result, connectorPrefix)` | Render an MCP `tools/list` result into OpenAI's model-facing connector descriptions. |
 | `renderInputSchema(schema)` | Render one MCP `inputSchema`. |
 | `renderOutputSchema(schema)` | Render one MCP `outputSchema` using OpenAI's observed return-type behavior. |
 | `validateToolsList(result)` | Validate every tool schema and report the specific tools that OpenAI would reject or degrade based on the captured behavior. |

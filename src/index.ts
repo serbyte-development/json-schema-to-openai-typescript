@@ -34,7 +34,7 @@ export function renderOutputSchema(schema: JsonSchema): string {
   return renderHarmonyBasedOutputSchema(schema)
 }
 
-/** Render an MCP tools/list result using OpenAI's observed connector signatures. */
+/** Render an MCP tools/list result using OpenAI's observed connector descriptions. */
 export function renderToolsList(
   result: ToolsListResult,
   connectorPrefix: string,
@@ -44,7 +44,7 @@ export function renderToolsList(
       `Expected an OpenAI MCP connector prefix like "mcp__my_connector__", received ${JSON.stringify(connectorPrefix)}`,
     )
   }
-  return `${result.tools.map((tool) => renderConnectorTool(tool, connectorPrefix)).join("\n")}\n`
+  return `${result.tools.map((tool) => renderConnectorTool(tool, connectorPrefix)).join("\n\n")}\n`
 }
 
 /** @deprecated Use renderInputSchema. */
@@ -66,5 +66,9 @@ function renderConnectorTool(tool: McpToolDefinition, prefix: string): string {
   const output = tool.outputSchema
     ? renderHarmonyBasedOutputSchema(tool.outputSchema)
     : "unknown"
-  return `${prefix}${tool.name}(args: ${input}): Promise<${output}>;`
+  const signature = `${prefix}${tool.name}(args: ${input}): Promise<${output}>;`
+  const renderedSignature = `\`\`\`ts\n${signature}\n\`\`\``
+  return tool.description
+    ? `${tool.description}\n\n${renderedSignature}`
+    : renderedSignature
 }

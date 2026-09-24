@@ -115,25 +115,32 @@ test("matches every captured OpenAI output conversion", () => {
   }
 })
 
-test("matches every captured OpenAI connector signature", () => {
+test("matches every captured OpenAI connector description", () => {
   const tools = JSON.parse(
     readFileSync(mcpToolsPath, "utf8"),
   ) as McpToolDefinition[]
-  const expected = JSON.parse(readFileSync(normalizedPath, "utf8")) as Array<{
-    name: string
-    input: string
-    output: string
-  }>
-  const expectedSignatures = `${expected
-    .map(
-      (tool) =>
-        `mcp__test_openai_typescript__${tool.name}(args: ${tool.input}): Promise<${tool.output}>;`,
-    )
-    .join("\n")}\n`
+  const expectedDescriptions = readFileSync(openaiSignaturesPath, "utf8")
 
   assert.equal(
     renderToolsList({ tools }, "mcp__test_openai_typescript__"),
-    expectedSignatures,
+    expectedDescriptions,
+  )
+})
+
+test("renders a connector signature without prose when a tool has no description", () => {
+  assert.equal(
+    renderToolsList(
+      {
+        tools: [
+          {
+            name: "undocumented",
+            inputSchema: { type: "object", properties: {} },
+          },
+        ],
+      },
+      "mcp__test__",
+    ),
+    "```ts\nmcp__test__undocumented(args: object): Promise<unknown>;\n```\n",
   )
 })
 
